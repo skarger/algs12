@@ -1,0 +1,2 @@
+typedef struct graph Graph;
+
