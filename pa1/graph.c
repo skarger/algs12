@@ -8,7 +8,10 @@ Adjacency *create_adjacency(int num_vertices);
 Vertex *create_vertex(int num_edges);
 void destroy_graph(Graph *g);
 void fill_edges(Vertex *v, int num_edges);
-Vertex *get_vertex(Graph *g, int n);
+Vertex *get_vertex(Graph *g, int i);
+float get_edge_cost(Vertex *v, int i);
+void set_edge_cost(Vertex *v, int edge_idx, float cost);
+void zero_self_costs(Graph *g);
 
 void error(int errcd, char *msg1, char *msg2) {
     printf("%s %s",msg1, msg2);
@@ -29,6 +32,7 @@ struct vertex {
     int id;
     int explored;
     float *edges;
+    float *coord; // coordinates
 };
 
 struct edge {
@@ -75,6 +79,7 @@ Vertex *create_vertex(int num_edges) {
     if (v == NULL) {
         error(1,"create_vertex: cannot malloc Vertex","");
     }
+    // create array of edge costs
     float *e_arr = (float*) malloc(num_edges * sizeof(float*));
     if (e_arr == NULL) {
         error(1,"create_vertex: cannot malloc edges\n","");
@@ -88,14 +93,29 @@ Vertex *create_vertex(int num_edges) {
 void fill_edges(Vertex *v, int num_edges) {
     int i;
     for (i = 0; i < num_edges; i++) {
-        v->edges[i] = 0.5;
-        // debug        printf("i = %d, ve = %f, adrve = %p\n", i, v->edges[i], &v->edges[i]);
+        set_edge_cost(v, i, 0.5);
     }
 }
 
-Vertex *get_vertex(Graph *g, int n) {
-    // debug    printf("vid: %d vadr: %p\n",g->adj->adj_mat[n]->id, g->adj->adj_mat[n]);
-    return g->adj->adj_mat[n];
+void zero_self_costs(Graph *g) {
+    int i;
+    Vertex *vp;
+    for(i = 0; i < g->num_vertices; i++) {
+        vp = get_vertex(g, i);
+        set_edge_cost(vp, i, 0);
+    }
+}
+
+Vertex *get_vertex(Graph *g, int i) {
+    return g->adj->adj_mat[i];
+}
+
+float get_edge_cost(Vertex *v, int i) {
+    return v->edges[i];
+}
+
+void set_edge_cost(Vertex *v, int edge_idx, float cost) {
+    v->edges[edge_idx] = cost;
 }
 
 void destroy_graph(Graph *g) {
@@ -121,14 +141,15 @@ int main() {
     for (i = 0; i < 10; i++) {
         fill_edges(get_vertex(g, i), 10);
     }
-    for (i = 0; i < 10; i++) {
-        printf("ew: %f ",(g->adj->adj_mat[i]->edges[0]));
-    }
+
+    zero_self_costs(g);
     printf("\n");
     int j;
+    Vertex *vt;
     for (j=0; j < 10; j++) {
+        vt = get_vertex(g, j);
         for (i = 0; i < 10; i++) {
-                printf("ew: %f ",(g->adj->adj_mat[j]->edges[i]));
+                printf("ew: %f ",(get_edge_cost(vt, i)));
         }
         printf("\n");
     }
