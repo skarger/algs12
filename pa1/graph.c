@@ -3,43 +3,12 @@
 #include "randmst.h"
 #include "graph.h"
 
-Graph *create_graph(int num_vertices);
-Adjacency *create_adjacency(int num_vertices);
-Vertex *create_vertex(int num_edges);
-void destroy_graph(Graph *g);
-void fill_edges(Vertex *v, int num_edges);
-Vertex *get_vertex(Graph *g, int i);
-float get_edge_cost(Vertex *v, int i);
-void set_edge_cost(Vertex *v, int edge_idx, float cost);
-void zero_self_costs(Graph *g);
 
 void error(int errcd, char *msg1, char *msg2) {
     printf("%s %s",msg1, msg2);
     exit(errcd);
 }
 
-struct graph {
-    int num_vertices;
-    int num_edges;
-    Adjacency *adj;
-};
-
-struct adjacency {
-    Vertex **adj_mat;
-};
-
-struct vertex {
-    int id;
-    int explored;
-    float *edges;
-    float *coord; // coordinates
-};
-
-struct edge {
-    Vertex *start;
-    Vertex * end;
-    double cost;
-};
 
 Graph *create_graph(int num_vertices) {
     Graph *g = malloc(sizeof(Graph));
@@ -53,25 +22,20 @@ Graph *create_graph(int num_vertices) {
     return g;
 }
 
-Adjacency *create_adjacency(int num_vertices) {
-    Adjacency *a = malloc(sizeof(Adjacency));
-    if (a == NULL) {
-        error(1,"create_adjacency: cannot malloc Adjacency\n","");
-    }
+Vertex **create_adjacency(int num_vertices) {
     // array of vertices
-    Vertex **v_arr = (Vertex**) malloc(num_vertices * sizeof(Vertex*));
-    if (v_arr == NULL) {
+    Vertex **vp = (Vertex**) malloc(num_vertices * sizeof(Vertex*));
+    if (vp == NULL) {
         error(1,"create_adjacency: cannot malloc vertex array\n","");
     }
 
     int i;
     for (i = 0; i < num_vertices; i++) {
-        v_arr[i] = create_vertex(num_vertices);
-        v_arr[i]->id = i;     // give each vertex an id
+        vp[i] = create_vertex(num_vertices);
+        vp[i]->id = i;     // give each vertex an id
     }
 
-    a->adj_mat = v_arr;
-    return a;
+    return vp;
 }
 
 Vertex *create_vertex(int num_edges) {
@@ -79,55 +43,95 @@ Vertex *create_vertex(int num_edges) {
     if (v == NULL) {
         error(1,"create_vertex: cannot malloc Vertex","");
     }
-    // create array of edge costs
-    float *e_arr = (float*) malloc(num_edges * sizeof(float*));
-    if (e_arr == NULL) {
-        error(1,"create_vertex: cannot malloc edges\n","");
-    }
-                                   
-    v->edges = e_arr;
     v->explored = 0;
+    v->num_edges = 0;
+    v->edges = NULL;
+    v->coord = NULL;
     return v;
 }
 
-void fill_edges(Vertex *v, int num_edges) {
-    int i;
-    for (i = 0; i < num_edges; i++) {
-        set_edge_cost(v, i, 0.5);
+Edge *create_edges(int num_edges) {
+    // create array of edge costs
+    Edge *ep = (Edge*) malloc(num_edges * sizeof(Edge*));
+    if (ep == NULL) {
+        error(1,"create_edges: cannot malloc edges\n","");
+    }
+    return ep;
+}
+
+
+void fill_edges(Vertex *v) {
+    Edge *p = get_edge(v, 0);
+    while (p != NULL) {
+        set_edge_cost(p, 0.5);
+        p = next_edge(v, p);
     }
 }
 
 void zero_self_costs(Graph *g) {
     int i;
     Vertex *vp;
+    Edge *ep;
     for(i = 0; i < g->num_vertices; i++) {
         vp = get_vertex(g, i);
-        set_edge_cost(vp, i, 0);
+        ep = get_edge(vp, i);
+        set_edge_cost(ep, 0);
     }
 }
 
 Vertex *get_vertex(Graph *g, int i) {
-    return g->adj->adj_mat[i];
+    if (i < 0 || i > (g->num_vertices-1)) {
+        error(1,"get_vertex: invalid vertex index\n","");
+    }
+    return g->adj[i];
 }
 
-float get_edge_cost(Vertex *v, int i) {
+void set_edges(Vertex *v, Edge *edges, int num_edges) {
+    if (v->edges != NULL)
+        free(v->edges); // out with the old
+    v->edges = edges; // in with the new
+    v->num_edges = num_edges;
+}
+
+Edge *get_edge(Vertex *v, int i) {
+    if (i < 0 || i > (v->num_edges-1)) {
+        error(1,"get_edge: invalid edge index\n","");
+    }
+    return &(v->edges[i]);
+}
+
+Edge get_edge_cost(Vertex *v, int i) {
+    if (i < 0 || i > (v->num_edges-1)) {
+        error(1,"get_edge_cost: invalid edge index\n","");
+    }
     return v->edges[i];
 }
 
-void set_edge_cost(Vertex *v, int edge_idx, float cost) {
-    v->edges[edge_idx] = cost;
+void set_edge_cost(Edge *edge, Edge cost) {
+    *edge = cost;
+}
+
+Edge *next_edge(Vertex *v, Edge *current) {
+    if (current < v->edges || current >= (v->edges + v->num_edges)) {
+        error(1,"next_edge: invalid current pointer\n","");
+    }
+    current++;
+    if (current == (v->edges + v->num_edges))
+        return NULL;
+    else
+        return current;
 }
 
 void destroy_graph(Graph *g) {
     int i;
-    for (i = 0; i < g->num_vertices; i++) {
-        free(g->adj->adj_mat[i]->edges);
+    for (i = 0; i < g->num_vertices; i++) { 
+        free(g->adj[i]->edges); // edge arrays
+        free(g->adj[i]); // vertices
     }
-    free(g->adj->adj_mat);
     free(g->adj);
     free(g);
 }
-    
+
 int main() {
     Graph *g = create_graph(10);
     if (g == NULL)
@@ -139,7 +143,13 @@ int main() {
 
     int i;
     for (i = 0; i < 10; i++) {
-        fill_edges(get_vertex(g, i), 10);
+        Vertex *vp = get_vertex(g, i);
+        Edge *ep = create_edges(10);
+        set_edges(vp, ep, 10);
+    }
+
+    for (i = 0; i < 10; i++) {
+        fill_edges(get_vertex(g, i));
     }
 
     zero_self_costs(g);
@@ -154,9 +164,31 @@ int main() {
         printf("\n");
     }
 
+    Edge *new_edge = (Edge *) malloc(10 * sizeof(Edge));
+    Edge edgearr[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
+
+    for (i = 0; i < 10; i++) {
+        new_edge[i] = edgearr[i];
+        printf("%f\n", (new_edge[i]));
+    }
+
+    vt = get_vertex(g, 9);
+    set_edges(vt, new_edge, 10);
+
+    zero_self_costs(g);
+    for (j=0; j < 10; j++) {
+        vt = get_vertex(g, j);
+        for (i = 0; i < 10; i++) {
+                printf("ew: %f ",(get_edge_cost(vt, i)));
+        }
+        printf("\n");
+    }
+    // should error:
+    //Vertex *myv = get_vertex(g, 0);
+    //get_edge_cost(myv, 10);
+
     destroy_graph(g);
 
     return 0;
 }
-
 
