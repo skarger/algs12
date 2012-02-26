@@ -52,7 +52,7 @@ Vertex *create_vertex(int num_edges) {
 
 Edge *create_edges(int num_edges) {
     // create array of edge costs
-    Edge *ep = (Edge*) malloc(num_edges * sizeof(Edge*));
+    Edge *ep = (Edge*) malloc(num_edges * sizeof(Edge));
     if (ep == NULL) {
         error(1,"create_edges: cannot malloc edges\n","");
     }
@@ -84,6 +84,17 @@ Vertex *get_vertex(Graph *g, int i) {
         error(1,"get_vertex: invalid vertex index\n","");
     }
     return g->adj[i];
+}
+
+Vertex *next_vertex(Graph *g, Vertex *current) {
+    if (current < g->adj[0] || current >= g->adj[0] + g->num_vertices) {
+        error(1,"next_vertex: invalid current pointer\n","");
+    }
+    current++;
+    if (current == g->adj[0] + g->num_vertices)
+        return NULL;
+    else
+        return current;
 }
 
 void set_edges(Vertex *v, Edge *edges, int num_edges) {
@@ -131,7 +142,7 @@ void destroy_graph(Graph *g) {
     free(g->adj);
     free(g);
 }
-
+/*
 int main() {
     Graph *g = create_graph(10);
     if (g == NULL)
@@ -176,12 +187,17 @@ int main() {
     set_edges(vt, new_edge, 10);
 
     zero_self_costs(g);
-    for (j=0; j < 10; j++) {
-        vt = get_vertex(g, j);
-        for (i = 0; i < 10; i++) {
-                printf("ew: %f ",(get_edge_cost(vt, i)));
+
+    Edge *ep;
+    vt = get_vertex(g, 0);
+    while(vt != NULL) {
+        ep = get_edge(vt, 0);
+        while(ep != NULL) {
+                printf("ew: %f ",*ep);
+                ep = next_edge(vt, ep);
         }
         printf("\n");
+        vt = next_vertex(g, vt);
     }
     // should error:
     //Vertex *myv = get_vertex(g, 0);
@@ -191,4 +207,4 @@ int main() {
 
     return 0;
 }
-
+*/
