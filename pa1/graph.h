@@ -6,7 +6,7 @@ typedef float Edge;
 
 struct graph {
     int num_vertices;
-    Vertex **adj;
+    Vertex *adj;
 };
 
 struct vertex {
@@ -20,8 +20,8 @@ struct vertex {
 Graph *create_graph(int num_vertices);
 void destroy_graph(Graph *g);
 
-Vertex **create_adjacency(int num_vertices);
-Vertex *create_vertex(int num_edges);
+Vertex *create_adjacency(int num_vertices);
+void initialize_vertex(Vertex *v);
 Vertex *get_vertex(Graph *g, int i);
 Vertex *next_vertex(Graph *g, Vertex *current);
 

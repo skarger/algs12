@@ -22,32 +22,28 @@ Graph *create_graph(int num_vertices) {
     return g;
 }
 
-Vertex **create_adjacency(int num_vertices) {
+Vertex *create_adjacency(int num_vertices) {
     // array of vertices
-    Vertex **vp = (Vertex**) malloc(num_vertices * sizeof(Vertex*));
+    Vertex *vp = (Vertex*) malloc(num_vertices * sizeof(Vertex));
     if (vp == NULL) {
         error(1,"create_adjacency: cannot malloc vertex array\n","");
     }
 
     int i;
     for (i = 0; i < num_vertices; i++) {
-        vp[i] = create_vertex(num_vertices);
-        vp[i]->id = i;     // give each vertex an id
+        initialize_vertex(&vp[i]);
+        vp[i].id = i;     // give each vertex an id
     }
 
     return vp;
 }
 
-Vertex *create_vertex(int num_edges) {
-    Vertex *v = (Vertex*) malloc(sizeof(Vertex));
-    if (v == NULL) {
-        error(1,"create_vertex: cannot malloc Vertex","");
-    }
+void initialize_vertex(Vertex *v) {
+    v->id = -1;
     v->explored = 0;
     v->num_edges = 0;
     v->edges = NULL;
     v->coord = NULL;
-    return v;
 }
 
 Edge *create_edges(int num_edges) {
@@ -83,15 +79,15 @@ Vertex *get_vertex(Graph *g, int i) {
     if (i < 0 || i > (g->num_vertices-1)) {
         error(1,"get_vertex: invalid vertex index\n","");
     }
-    return g->adj[i];
+    return &(g->adj[i]);
 }
 
 Vertex *next_vertex(Graph *g, Vertex *current) {
-    if (current < g->adj[0] || current >= g->adj[0] + g->num_vertices) {
+    if (current < g->adj || current >= g->adj + g->num_vertices) {
         error(1,"next_vertex: invalid current pointer\n","");
     }
     current++;
-    if (current == g->adj[0] + g->num_vertices)
+    if (current == g->adj + g->num_vertices)
         return NULL;
     else
         return current;
@@ -136,8 +132,7 @@ Edge *next_edge(Vertex *v, Edge *current) {
 void destroy_graph(Graph *g) {
     int i;
     for (i = 0; i < g->num_vertices; i++) { 
-        free(g->adj[i]->edges); // edge arrays
-        free(g->adj[i]); // vertices
+        free(g->adj[i].edges); // edge arrays
     }
     free(g->adj);
     free(g);

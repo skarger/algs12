@@ -108,7 +108,7 @@ int main() {
     //printf("RAND_MAX %d\n", RAND_MAX);
     //printf("random max %f\n", pow(2,31) - 1);
 
-    Graph *g = create_random_graph(0, 16384);    
+    Graph *g = create_random_graph(0, 32678);
     printf("gnv %d\n", g->num_vertices);
 
     destroy_graph(g);
