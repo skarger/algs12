@@ -46,35 +46,6 @@ void initialize_vertex(Vertex *v) {
     v->coord = NULL;
 }
 
-Edge *create_edges(int num_edges) {
-    // create array of edge costs
-    Edge *ep = (Edge*) malloc(num_edges * sizeof(Edge));
-    if (ep == NULL) {
-        error(1,"create_edges: cannot malloc edges\n","");
-    }
-    return ep;
-}
-
-
-void fill_edges(Vertex *v) {
-    Edge *p = get_edge(v, 0);
-    while (p != NULL) {
-        set_edge_cost(p, 0.5);
-        p = next_edge(v, p);
-    }
-}
-
-void zero_self_costs(Graph *g) {
-    int i;
-    Vertex *vp;
-    Edge *ep;
-    for(i = 0; i < g->num_vertices; i++) {
-        vp = get_vertex(g, i);
-        ep = get_edge(vp, i);
-        set_edge_cost(ep, 0);
-    }
-}
-
 Vertex *get_vertex(Graph *g, int i) {
     if (i < 0 || i > (g->num_vertices-1)) {
         error(1,"get_vertex: invalid vertex index\n","");
@@ -91,6 +62,24 @@ Vertex *next_vertex(Graph *g, Vertex *current) {
         return NULL;
     else
         return current;
+}
+
+float *create_float_array(int n) {
+    if (n < 1)
+        error(1,"create_float_array: n must be > 0\n","");
+    float *fp = malloc(n * sizeof(float));
+    if (fp == NULL)
+        error(1,"create_float_array: cannot malloc coordinates\n","");
+    return fp; 
+}
+
+Edge *create_edges(int num_edges) {
+    // create array of edge costs
+    Edge *ep = (Edge*) malloc(num_edges * sizeof(Edge));
+    if (ep == NULL) {
+        error(1,"create_edges: cannot malloc edges\n","");
+    }
+    return ep;
 }
 
 void set_edges(Vertex *v, Edge *edges, int num_edges) {
@@ -132,11 +121,33 @@ Edge *next_edge(Vertex *v, Edge *current) {
 void destroy_graph(Graph *g) {
     int i;
     for (i = 0; i < g->num_vertices; i++) { 
+        if (g->adj[i].coord != NULL)
+            free(g->adj[i].coord);
         free(g->adj[i].edges); // edge arrays
     }
     free(g->adj);
     free(g);
 }
+
+void fill_edges(Vertex *v) {
+    Edge *p = get_edge(v, 0);
+    while (p != NULL) {
+        set_edge_cost(p, 0.5);
+        p = next_edge(v, p);
+    }
+}
+
+void zero_self_costs(Graph *g) {
+    int i;
+    Vertex *vp;
+    Edge *ep;
+    for(i = 0; i < g->num_vertices; i++) {
+        vp = get_vertex(g, i);
+        ep = get_edge(vp, i);
+        set_edge_cost(ep, 0);
+    }
+}
+
 /*
 int main() {
     Graph *g = create_graph(10);
