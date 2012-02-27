@@ -1,19 +1,11 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include <time.h>
+#include <stdio.h>
 #include <math.h>
 
+#include "utils.h"
 #include "graph.h"
-
-
-Graph *create_random_graph(int dim, int num_vertices);
-
-void make_cube_edges(Graph *g, int dim);
-void set_random_coordinates(Graph *g, int dim);
-void make_interval_edges(Graph *g);
-float random_float(float a, float b);
-void load_graph(Graph *g, int dimension);
-void copy_symmetric_edge_costs(Graph *g);
+#include "random_graph.h"
 
 Graph *create_random_graph(int dim, int num_vertices) {
     Graph *g = create_graph(num_vertices);
@@ -70,12 +62,31 @@ void make_interval_edges(Graph *g) {
 
 void make_cube_edges(Graph *g, int dim) {
     set_random_coordinates(g, dim);
-    Edge *ep;
-    Vertex *vp = get_vertex(g, 0);
-    int vertex_idx = 0;
-    while(vp != NULL) {
 
+    if (g->num_vertices < 2)
+        return; // no edges to compute
+
+    Edge *ep;
+    Vertex *vp, *other_v;
+    int vertex_idx, other_vertex_idx;
+    float *this_coord, *other_coord, dist;
+
+    vp = get_vertex(g, 0);
+    vertex_idx = 0;
+    while(vp != NULL) {
+        this_coord = vp->coord;
+        other_v = get_vertex(g, vertex_idx);
+        other_vertex_idx = vertex_idx;
+        while (other_v != NULL) {
+            other_coord = other_v->coord;
+            dist = euclidean_distance(this_coord, other_coord, dim);
+            ep = get_edge(vp, other_vertex_idx);
+            set_edge_cost(ep, dist);
+            other_v = next_vertex(g, other_v);
+            other_vertex_idx++;
+        }
         vp = next_vertex(g, vp);
+        vertex_idx++;
     }
 }
 
@@ -126,28 +137,14 @@ void copy_symmetric_edge_costs(Graph *g) {
     }
 }
 
-/*
- * random_float
- * return a random float in the interval [a, b]
- */
-float random_float(float a, float b) {
-    if (b < a)
-        return 0;
-    /* make random number in [0,1] */
-    float ran_fraction = (1.0 * random()) / RAND_MAX;
-    /* scale it to be in interval [a,b] */
-    return (a + (b - a) * ran_fraction);
-}
-
 int main() {
     int i;
-    int dim = 0;
-    Graph *g = create_random_graph(dim, 2);
+    int dim = 4;
+    Graph *g = create_random_graph(dim, 6);
     printf("gnv %d\n", g->num_vertices);
 
-/*
     copy_symmetric_edge_costs(g);
-*/
+
     Edge *ep;
     Vertex *vt;
     vt = get_vertex(g, 0);
@@ -178,20 +175,20 @@ int main() {
 
     while(vt != NULL) {
         printf("id: %d", vt->id);
+/*
         printf(" coord: ");
         for(i = 0; i < dim; i++)
             printf("%f ",vt->coord[i]);
-/*
+*/
         ep = get_edge(vt, 0);
         while(ep != NULL) {
             printf(" %f ",*ep);
             ep = next_edge(vt, ep);
         }
-*/
         printf("\n");
         printf("\n");
         vt = next_vertex(g, vt);
-    }
+   }
 
 
     destroy_graph(g);

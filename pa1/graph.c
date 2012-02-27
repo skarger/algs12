@@ -2,12 +2,8 @@
 #include <stdio.h>
 #include "randmst.h"
 #include "graph.h"
+#include "utils.h"
 
-
-void error(int errcd, char *msg1, char *msg2) {
-    printf("%s %s",msg1, msg2);
-    exit(errcd);
-}
 
 
 Graph *create_graph(int num_vertices) {
@@ -62,15 +58,6 @@ Vertex *next_vertex(Graph *g, Vertex *current) {
         return NULL;
     else
         return current;
-}
-
-float *create_float_array(int n) {
-    if (n < 1)
-        error(1,"create_float_array: n must be > 0\n","");
-    float *fp = malloc(n * sizeof(float));
-    if (fp == NULL)
-        error(1,"create_float_array: cannot malloc coordinates\n","");
-    return fp; 
 }
 
 Edge *create_edges(int num_edges) {

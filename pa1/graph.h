@@ -36,4 +36,3 @@ void fill_edges(Vertex *v);
 void zero_self_costs(Graph *g);
 
 
-float *create_float_array(int n);

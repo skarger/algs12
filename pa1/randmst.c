@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "randmst.h"
+#include "utils.h"
 #include "graph.h"
+#include "randmst.h"
 
 int main(int argc, char * argv[]) {
     /* input validation */
@@ -50,7 +51,3 @@ int main(int argc, char * argv[]) {
     return 0;
 }
 
-void error(int errcd, char *msg1, char *msg2) {
-    printf("%s %s",msg1, msg2);
-    exit(errcd);
-}
