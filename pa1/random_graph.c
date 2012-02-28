@@ -66,28 +66,24 @@ void make_cube_edges(Graph *g, int dim) {
     if (g->num_vertices < 2)
         return; // no edges to compute
 
-    Edge *ep;
     Vertex *vp, *other_v;
-    int vertex_idx, other_vertex_idx;
-    float *this_coord, *other_coord, dist;
 
     vp = get_vertex(g, 0);
-    vertex_idx = 0;
     while(vp != NULL) {
-        this_coord = vp->coord;
-        other_v = get_vertex(g, vertex_idx);
-        other_vertex_idx = vertex_idx;
+        // start calculating from the current vertex
+        other_v = vp; 
         while (other_v != NULL) {
-            other_coord = other_v->coord;
-            dist = euclidean_distance(this_coord, other_coord, dim);
-            ep = get_edge(vp, other_vertex_idx);
-            set_edge_cost(ep, dist);
+            set_euclidean_edge_cost(vp, other_v);
             other_v = next_vertex(g, other_v);
-            other_vertex_idx++;
         }
         vp = next_vertex(g, vp);
-        vertex_idx++;
     }
+}
+
+void set_euclidean_edge_cost(Vertex *v, Vertex *w) {
+    Edge *ep = get_edge(v, get_index(w));
+    float dist = euclidean_distance(v->coord, w->coord, get_dimension(v));
+    set_edge_cost(ep, dist);
 }
 
 
@@ -101,6 +97,7 @@ void set_random_coordinates(Graph *g, int dim) {
         for(i = 0; i < dim; i++)
             coordinates[i] = random_float(0,1);
         vp->coord = coordinates;
+        vp->dimension = dim;
         vp = next_vertex(g, vp);
     }
 }

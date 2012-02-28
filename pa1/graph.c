@@ -39,6 +39,7 @@ void initialize_vertex(Vertex *v) {
     v->explored = 0;
     v->num_edges = 0;
     v->edges = NULL;
+    v->dimension = 0;
     v->coord = NULL;
 }
 
@@ -103,6 +104,14 @@ Edge *next_edge(Vertex *v, Edge *current) {
         return NULL;
     else
         return current;
+}
+
+int get_dimension(Vertex *v) {
+    return v->dimension;
+}
+
+int get_index(Vertex *v) {
+    return v->id;
 }
 
 void destroy_graph(Graph *g) {

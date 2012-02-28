@@ -14,7 +14,8 @@ struct vertex {
     int explored;
     int num_edges;
     Edge *edges;
-    float *coord; // coordinates
+    int dimension; // number of coordinates
+    float *coord;  // coordinate values
 };
 
 Graph *create_graph(int num_vertices);
@@ -31,6 +32,9 @@ Edge *get_edge(Vertex *v, int i);
 Edge get_edge_cost(Vertex *v, int i);
 void set_edge_cost(Edge *edge, Edge cost);
 Edge *next_edge(Vertex *v, Edge *current);
+
+int get_dimension(Vertex *v);
+int get_index(Vertex *v);
 
 void fill_edges(Vertex *v);
 void zero_self_costs(Graph *g);
