@@ -4,6 +4,7 @@
 
 #include "utils.h"
 #include "graph.h"
+#include "random_graph.h"
 #include "randmst.h"
 
 int main(int argc, char * argv[]) {
@@ -25,7 +26,7 @@ int main(int argc, char * argv[]) {
         printf("flag\n");
 
 
-    Graph *g = NULL;
+    Graph *g = create_random_graph(dim, numpoints);
     double weight[numtrials]; // storage for MST weight
 
     /* compute MST and weight */

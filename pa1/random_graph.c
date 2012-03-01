@@ -20,9 +20,10 @@ Graph *create_random_graph(int dim, int num_vertices) {
 void load_graph(Graph *g, int dimension) {
     Vertex *vp = get_vertex(g, 0);
     Edge *ep;
+    int num_vertices = get_num_vertices(g);
     while(vp != NULL) {
-        ep = create_edges(g->num_vertices);
-        set_edges(vp, ep, g->num_vertices);
+        ep = create_edges(num_vertices);
+        set_edges(vp, ep, num_vertices);
         vp = next_vertex(g, vp);
     }
     if (dimension == 0)
@@ -63,7 +64,7 @@ void make_interval_edges(Graph *g) {
 void make_cube_edges(Graph *g, int dim) {
     set_random_coordinates(g, dim);
 
-    if (g->num_vertices < 2)
+    if (get_num_vertices(g) < 2)
         return; // no edges to compute
 
     Vertex *vp, *other_v;
@@ -82,7 +83,8 @@ void make_cube_edges(Graph *g, int dim) {
 
 void set_euclidean_edge_cost(Vertex *v, Vertex *w) {
     Edge *ep = get_edge(v, get_index(w));
-    float dist = euclidean_distance(v->coord, w->coord, get_dimension(v));
+    float dist = euclidean_distance(get_coordinates(v), get_coordinates(w), 
+                                    get_dimension(v));
     set_edge_cost(ep, dist);
 }
 
@@ -115,7 +117,7 @@ void set_random_coordinates(Graph *g, int dim) {
  *   2 | -  -  0        2 | y  z  0
  */
 void copy_symmetric_edge_costs(Graph *g) {
-    if (g->num_vertices < 2)
+    if (get_num_vertices(g) < 2)
         return; // nothing to copy
 
     Vertex *vp = get_vertex(g, 1), *prev_vertex;
@@ -134,18 +136,23 @@ void copy_symmetric_edge_costs(Graph *g) {
     }
 }
 
+
+
+
+
+/*
 int main() {
     int i;
     int dim = 4;
-    Graph *g = create_random_graph(dim, 6);
-    printf("gnv %d\n", g->num_vertices);
+    Graph *g = create_random_graph(dim, 32768);
+    printf("gnv %d\n", get_num_vertices(g));
 
-    copy_symmetric_edge_costs(g);
+    //copy_symmetric_edge_costs(g);
 
     Edge *ep;
     Vertex *vt;
     vt = get_vertex(g, 0);
-
+*/
 /*
     float min = 1.0, max = 0.0;
         ep = get_edge(vt, 0);
@@ -170,13 +177,12 @@ int main() {
         }
 */
 
+/*
     while(vt != NULL) {
         printf("id: %d", vt->id);
-/*
         printf(" coord: ");
         for(i = 0; i < dim; i++)
             printf("%f ",vt->coord[i]);
-*/
         ep = get_edge(vt, 0);
         while(ep != NULL) {
             printf(" %f ",*ep);
@@ -186,8 +192,11 @@ int main() {
         printf("\n");
         vt = next_vertex(g, vt);
    }
+*/
+/*
 
 
     destroy_graph(g);
     return 0;
 }
+*/

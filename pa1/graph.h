@@ -33,8 +33,11 @@ Edge get_edge_cost(Vertex *v, int i);
 void set_edge_cost(Edge *edge, Edge cost);
 Edge *next_edge(Vertex *v, Edge *current);
 
+int get_num_vertices(Graph *g);
 int get_dimension(Vertex *v);
 int get_index(Vertex *v);
+int get_num_edges(Vertex *v);
+float *get_coordinates(Vertex *v);
 
 void fill_edges(Vertex *v);
 void zero_self_costs(Graph *g);

@@ -106,12 +106,24 @@ Edge *next_edge(Vertex *v, Edge *current) {
         return current;
 }
 
+int get_num_vertices(Graph *g) {
+    return g->num_vertices;
+}
+
 int get_dimension(Vertex *v) {
     return v->dimension;
 }
 
 int get_index(Vertex *v) {
     return v->id;
+}
+
+int get_num_edges(Vertex *v) {
+    return v->num_edges;
+}
+
+float *get_coordinates(Vertex *v) {
+    return v->coord;
 }
 
 void destroy_graph(Graph *g) {
