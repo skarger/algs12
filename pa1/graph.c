@@ -84,11 +84,8 @@ Edge *get_edge(Vertex *v, int i) {
     return &(v->edges[i]);
 }
 
-Edge get_edge_cost(Vertex *v, int i) {
-    if (i < 0 || i > (v->num_edges-1)) {
-        error(1,"get_edge_cost: invalid edge index\n","");
-    }
-    return v->edges[i];
+Edge get_edge_cost(Edge *ep) {
+    return *ep;
 }
 
 void set_edge_cost(Edge *edge, Edge cost) {
@@ -181,11 +178,15 @@ int main() {
     printf("\n");
     int j;
     Vertex *vt;
-    for (j=0; j < 10; j++) {
-        vt = get_vertex(g, j);
-        for (i = 0; i < 10; i++) {
-                printf("ew: %f ",(get_edge_cost(vt, i)));
+    vt = get_vertex(g, 0);
+    Edge *ep;
+    while(vt != NULL) {
+        ep = get_edge(vt, 0);
+        while(ep != NULL) {
+                printf("ew: %f ",*ep);
+                ep = next_edge(vt, ep);
         }
+        vt = next_vertex(g, vt);
         printf("\n");
     }
 
@@ -202,7 +203,6 @@ int main() {
 
     zero_self_costs(g);
 
-    Edge *ep;
     vt = get_vertex(g, 0);
     while(vt != NULL) {
         ep = get_edge(vt, 0);
@@ -213,9 +213,6 @@ int main() {
         printf("\n");
         vt = next_vertex(g, vt);
     }
-    // should error:
-    //Vertex *myv = get_vertex(g, 0);
-    //get_edge_cost(myv, 10);
 
     destroy_graph(g);
 

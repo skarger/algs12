@@ -29,7 +29,7 @@ Vertex *next_vertex(Graph *g, Vertex *current);
 Edge *create_edges(int num_edges);
 void set_edges(Vertex *v, Edge *edges, int num_edges);
 Edge *get_edge(Vertex *v, int i);
-Edge get_edge_cost(Vertex *v, int i);
+Edge get_edge_cost(Edge *ep);
 void set_edge_cost(Edge *edge, Edge cost);
 Edge *next_edge(Vertex *v, Edge *current);
 
