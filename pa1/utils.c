@@ -49,6 +49,14 @@ float euclidean_distance(float *x, float *y, int dimension) {
 }
 
 /*
+ * triangular_number
+ * return the sum of the integers from 1 to n (the nth triangular number)
+ */
+int triangular_number(int n) {
+    return (n * (n+1)) / 2;
+}
+
+/*
  * error
  * print an error message and return an error code
  */
