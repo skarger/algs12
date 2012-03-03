@@ -19,23 +19,23 @@ Graph *create_random_graph(int dim, int num_vertices) {
 
 void load_graph(Graph *g, int dimension) {
     Vertex *vp = get_vertex(g, 0);
-    Edge *ep;
+    EdgeWeight *ep;
     int num_vertices = get_num_vertices(g);
     while(vp != NULL) {
-        ep = create_edges(num_vertices);
-        set_edges(vp, ep, num_vertices);
+        ep = create_edge_weights(num_vertices);
+        set_edge_weights(vp, ep, num_vertices);
         vp = next_vertex(g, vp);
     }
     if (dimension == 0)
-        make_interval_edges(g);
+        make_interval_edge_weights(g);
     else {
-        make_cube_edges(g, dimension);
+        make_cube_edge_weights(g, dimension);
     }
 }
 
 
 /*
- * make_interval_edges
+ * make_interval_edge_weights
  * input: g, pointer to an undirected graph
  * action: for each vertex, set edge costs to all other vertices
  *         chooses edge costs from the interval [0,1]
@@ -43,29 +43,29 @@ void load_graph(Graph *g, int dimension) {
  *         because the costs to earlier vertices have already been set 
  *         given that it is an undirected graph
  */
-void make_interval_edges(Graph *g) {
+void make_interval_edge_weights(Graph *g) {
     srandom(time(NULL));
-    Edge *ep;
+    EdgeWeight *ep;
     Vertex *vp = get_vertex(g, 0);
     int vertex_idx = 0;
     while(vp != NULL) {
-        ep = get_edge(vp, vertex_idx);
-        set_edge_cost(ep, 0.0);
-        ep = next_edge(vp, ep);
+        ep = get_edge_weight(vp, vertex_idx);
+        set_edge_weight_value(ep, 0.0);
+        ep = next_edge_weight(vp, ep);
         while (ep != NULL) {
-            set_edge_cost(ep, random_float(0,1));
-            ep = next_edge(vp, ep);
+            set_edge_weight_value(ep, random_float(0,1));
+            ep = next_edge_weight(vp, ep);
         }
         vp = next_vertex(g, vp);
         vertex_idx++;
     }
 }
 
-void make_cube_edges(Graph *g, int dim) {
+void make_cube_edge_weights(Graph *g, int dim) {
     set_random_coordinates(g, dim);
 
     if (get_num_vertices(g) < 2)
-        return; // no edges to compute
+        return; // no edge_weights to compute
 
     Vertex *vp, *other_v;
 
@@ -74,18 +74,18 @@ void make_cube_edges(Graph *g, int dim) {
         // start calculating from the current vertex
         other_v = vp; 
         while (other_v != NULL) {
-            set_euclidean_edge_cost(vp, other_v);
+            set_euclidean_edge_weights(vp, other_v);
             other_v = next_vertex(g, other_v);
         }
         vp = next_vertex(g, vp);
     }
 }
 
-void set_euclidean_edge_cost(Vertex *v, Vertex *w) {
-    Edge *ep = get_edge(v, get_index(w));
+void set_euclidean_edge_weights(Vertex *v, Vertex *w) {
+    EdgeWeight *ep = get_edge_weight(v, get_index(w));
     float dist = euclidean_distance(get_coordinates(v), get_coordinates(w), 
                                     get_dimension(v));
-    set_edge_cost(ep, dist);
+    set_edge_weight_value(ep, dist);
 }
 
 
@@ -122,14 +122,15 @@ void copy_symmetric_edge_costs(Graph *g) {
 
     Vertex *vp = get_vertex(g, 1), *prev_vertex;
     int current_v_idx = 1, i;
-    Edge *ep;
+    EdgeWeight *ep, *prev_ep;
     while(vp != NULL) {
         for(i=0; i < current_v_idx; i++) {
             // the cost from the current vertex to vertex i is equal to 
             // the cost from vertex i to the current vertex
-            ep = get_edge(vp, i);
             prev_vertex = get_vertex(g, i);
-            set_edge_cost(ep,get_edge_cost(prev_vertex, current_v_idx));
+            prev_ep = get_edge_weight(prev_vertex, current_v_idx); 
+            ep = get_edge_weight(vp, i);
+            set_edge_weight_value(ep,get_edge_weight_value(prev_ep));
         }
         vp = next_vertex(g, vp);
         current_v_idx++;
@@ -143,57 +144,58 @@ void copy_symmetric_edge_costs(Graph *g) {
 /*
 int main() {
     int i;
-    int dim = 4;
-    Graph *g = create_random_graph(dim, 32768);
+    int dim = 0;
+    Graph *g = create_random_graph(dim, 3);
     printf("gnv %d\n", get_num_vertices(g));
 
-    //copy_symmetric_edge_costs(g);
+    copy_symmetric_edge_costs(g);
 
-    Edge *ep;
+    EdgeWeight *ep;
     Vertex *vt;
     vt = get_vertex(g, 0);
-*/
-/*
+
     float min = 1.0, max = 0.0;
-        ep = get_edge(vt, 0);
+        ep = get_edge_weight(vt, 0);
         while(ep != NULL) {
             if (*ep < min)
                 min = *ep;
             if (*ep > max)
                 max = *ep;
         //        printf(" %f ",*ep);
-            ep = next_edge(vt, ep);
+            ep = next_edge_weight(vt, ep);
         }
     printf("\n");
     printf("max: %f, min: %f", max, min);
     printf("\n");
     printf("last vertex\n");
-    vt = get_vertex(g, 32677);
-        ep = get_edge(vt, 0);
-        while(ep != NULL) {
-                if (*ep != 0.0) 
-                    printf(" %f ",*ep);
-                ep = next_edge(vt, ep);
-        }
-*/
+    vt = get_vertex(g, 2);
+    ep = get_edge_weight(vt, 0);
+    while(ep != NULL) {
+            if (*ep != 0.0) 
+                printf(" %f ",*ep);
+            ep = next_edge_weight(vt, ep);
+    }
 
-/*
+    printf("\n");
+
+    vt = get_vertex(g, 0);
     while(vt != NULL) {
         printf("id: %d", vt->id);
-        printf(" coord: ");
-        for(i = 0; i < dim; i++)
-            printf("%f ",vt->coord[i]);
-        ep = get_edge(vt, 0);
+        if (dim > 0) {
+            printf(" crd: ");
+            for(i = 0; i < dim; i++)
+                printf("%f ",vt->coord[i]);
+        }
+        printf(" wt: ");
+        ep = get_edge_weight(vt, 0);
         while(ep != NULL) {
             printf(" %f ",*ep);
-            ep = next_edge(vt, ep);
+            ep = next_edge_weight(vt, ep);
         }
         printf("\n");
         printf("\n");
         vt = next_vertex(g, vt);
    }
-*/
-/*
 
 
     destroy_graph(g);

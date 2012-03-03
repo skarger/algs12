@@ -2,7 +2,7 @@
 typedef struct graph Graph;
 typedef struct adjacency Adjacency;
 typedef struct vertex Vertex;
-typedef float Edge;
+typedef float EdgeWeight;
 
 struct graph {
     int num_vertices;
@@ -12,8 +12,8 @@ struct graph {
 struct vertex {
     int id;
     int explored;
-    int num_edges;
-    Edge *edges;
+    int num_edge_weights;
+    EdgeWeight *edge_weights;
     int dimension; // number of coordinates
     float *coord;  // coordinate values
 };
@@ -26,20 +26,20 @@ void initialize_vertex(Vertex *v);
 Vertex *get_vertex(Graph *g, int i);
 Vertex *next_vertex(Graph *g, Vertex *current);
 
-Edge *create_edges(int num_edges);
-void set_edges(Vertex *v, Edge *edges, int num_edges);
-Edge *get_edge(Vertex *v, int i);
-Edge get_edge_cost(Edge *ep);
-void set_edge_cost(Edge *edge, Edge cost);
-Edge *next_edge(Vertex *v, Edge *current);
+EdgeWeight *create_edge_weights(int num_edge_weights);
+void set_edge_weights(Vertex *v, EdgeWeight *edge_weights,int num_edge_weights);
+EdgeWeight *get_edge_weight(Vertex *v, int i);
+EdgeWeight get_edge_weight_value(EdgeWeight *ep);
+void set_edge_weight_value(EdgeWeight *edge_weight, EdgeWeight cost);
+EdgeWeight *next_edge_weight(Vertex *v, EdgeWeight *current);
 
 int get_num_vertices(Graph *g);
 int get_dimension(Vertex *v);
 int get_index(Vertex *v);
-int get_num_edges(Vertex *v);
+int get_num_edge_weights(Vertex *v);
 float *get_coordinates(Vertex *v);
 
-void fill_edges(Vertex *v);
+void fill_edge_weights(Vertex *v);
 void zero_self_costs(Graph *g);
 
 

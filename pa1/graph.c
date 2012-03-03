@@ -37,8 +37,8 @@ Vertex *create_adjacency(int num_vertices) {
 void initialize_vertex(Vertex *v) {
     v->id = -1;
     v->explored = 0;
-    v->num_edges = 0;
-    v->edges = NULL;
+    v->num_edge_weights = 0;
+    v->edge_weights = NULL;
     v->dimension = 0;
     v->coord = NULL;
 }
@@ -61,43 +61,44 @@ Vertex *next_vertex(Graph *g, Vertex *current) {
         return current;
 }
 
-Edge *create_edges(int num_edges) {
+EdgeWeight *create_edge_weights(int num_edge_weights) {
     // create array of edge costs
-    Edge *ep = (Edge*) malloc(num_edges * sizeof(Edge));
+    EdgeWeight *ep = (EdgeWeight*) malloc(num_edge_weights*sizeof(EdgeWeight));
     if (ep == NULL) {
-        error(1,"create_edges: cannot malloc edges\n","");
+        error(1,"create_edge_weights: cannot malloc edge_weights\n","");
     }
     return ep;
 }
 
-void set_edges(Vertex *v, Edge *edges, int num_edges) {
-    if (v->edges != NULL)
-        free(v->edges); // out with the old
-    v->edges = edges; // in with the new
-    v->num_edges = num_edges;
+void set_edge_weights(Vertex *v, EdgeWeight *edge_weights, int num_edge_weights){
+    if (v->edge_weights != NULL)
+        free(v->edge_weights); // out with the old
+    v->edge_weights = edge_weights; // in with the new
+    v->num_edge_weights = num_edge_weights;
 }
 
-Edge *get_edge(Vertex *v, int i) {
-    if (i < 0 || i > (v->num_edges-1)) {
-        error(1,"get_edge: invalid edge index\n","");
+EdgeWeight *get_edge_weight(Vertex *v, int i) {
+    if (i < 0 || i > (v->num_edge_weights-1)) {
+        error(1,"get_edge_weight: invalid edge weight index\n","");
     }
-    return &(v->edges[i]);
+    return &(v->edge_weights[i]);
 }
 
-Edge get_edge_cost(Edge *ep) {
+EdgeWeight get_edge_weight_value(EdgeWeight *ep) {
     return *ep;
 }
 
-void set_edge_cost(Edge *edge, Edge cost) {
-    *edge = cost;
+void set_edge_weight_value(EdgeWeight *edge_weight, EdgeWeight cost) {
+    *edge_weight = cost;
 }
 
-Edge *next_edge(Vertex *v, Edge *current) {
-    if (current < v->edges || current >= (v->edges + v->num_edges)) {
-        error(1,"next_edge: invalid current pointer\n","");
+EdgeWeight *next_edge_weight(Vertex *v, EdgeWeight *current) {
+    if (current < v->edge_weights || 
+        current >= (v->edge_weights + v->num_edge_weights)) {
+        error(1,"next_edge_weight: invalid current pointer\n","");
     }
     current++;
-    if (current == (v->edges + v->num_edges))
+    if (current == (v->edge_weights + v->num_edge_weights))
         return NULL;
     else
         return current;
@@ -115,8 +116,8 @@ int get_index(Vertex *v) {
     return v->id;
 }
 
-int get_num_edges(Vertex *v) {
-    return v->num_edges;
+int get_num_edge_weights(Vertex *v) {
+    return v->num_edge_weights;
 }
 
 float *get_coordinates(Vertex *v) {
@@ -128,28 +129,28 @@ void destroy_graph(Graph *g) {
     for (i = 0; i < g->num_vertices; i++) { 
         if (g->adj[i].coord != NULL)
             free(g->adj[i].coord);
-        free(g->adj[i].edges); // edge arrays
+        free(g->adj[i].edge_weights); // edge arrays
     }
     free(g->adj);
     free(g);
 }
 
-void fill_edges(Vertex *v) {
-    Edge *p = get_edge(v, 0);
+void fill_edge_weights(Vertex *v) {
+    EdgeWeight *p = get_edge_weight(v, 0);
     while (p != NULL) {
-        set_edge_cost(p, 0.5);
-        p = next_edge(v, p);
+        set_edge_weight_value(p, 0.5);
+        p = next_edge_weight(v, p);
     }
 }
 
 void zero_self_costs(Graph *g) {
     int i;
     Vertex *vp;
-    Edge *ep;
+    EdgeWeight *ep;
     for(i = 0; i < g->num_vertices; i++) {
         vp = get_vertex(g, i);
-        ep = get_edge(vp, i);
-        set_edge_cost(ep, 0);
+        ep = get_edge_weight(vp, i);
+        set_edge_weight_value(ep, 0);
     }
 }
 
@@ -166,12 +167,12 @@ int main() {
     int i;
     for (i = 0; i < 10; i++) {
         Vertex *vp = get_vertex(g, i);
-        Edge *ep = create_edges(10);
-        set_edges(vp, ep, 10);
+        EdgeWeight *ep = create_edge_weights(10);
+        set_edge_weights(vp, ep, 10);
     }
 
     for (i = 0; i < 10; i++) {
-        fill_edges(get_vertex(g, i));
+        fill_edge_weights(get_vertex(g, i));
     }
 
     zero_self_costs(g);
@@ -179,36 +180,36 @@ int main() {
     int j;
     Vertex *vt;
     vt = get_vertex(g, 0);
-    Edge *ep;
+    EdgeWeight *ep;
     while(vt != NULL) {
-        ep = get_edge(vt, 0);
+        ep = get_edge_weight(vt, 0);
         while(ep != NULL) {
                 printf("ew: %f ",*ep);
-                ep = next_edge(vt, ep);
+                ep = next_edge_weight(vt, ep);
         }
         vt = next_vertex(g, vt);
         printf("\n");
     }
 
-    Edge *new_edge = (Edge *) malloc(10 * sizeof(Edge));
-    Edge edgearr[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
+    EdgeWeight *new_edge_weight = (EdgeWeight *) malloc(10*sizeof(EdgeWeight));
+    EdgeWeight edgearr[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,10.0};
 
     for (i = 0; i < 10; i++) {
-        new_edge[i] = edgearr[i];
-        printf("%f\n", (new_edge[i]));
+        new_edge_weight[i] = edgearr[i];
+        printf("%f\n", (new_edge_weight[i]));
     }
 
     vt = get_vertex(g, 9);
-    set_edges(vt, new_edge, 10);
+    set_edge_weights(vt, new_edge_weight, 10);
 
     zero_self_costs(g);
 
     vt = get_vertex(g, 0);
     while(vt != NULL) {
-        ep = get_edge(vt, 0);
+        ep = get_edge_weight(vt, 0);
         while(ep != NULL) {
                 printf("ew: %f ",*ep);
-                ep = next_edge(vt, ep);
+                ep = next_edge_weight(vt, ep);
         }
         printf("\n");
         vt = next_vertex(g, vt);
