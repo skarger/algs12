@@ -231,6 +231,38 @@ int insert_edges_for_vertex(Graph *g, Vertex *v, Edge *arr, int start_idx) {
  */
 EdgeWeight k(int num_vertices, int dimension) {
     return 2.0;
+/*
+this function is incomplete so it just returns 2.0
+
+below are expected values for the distance between two points 
+randomly chosen from the entities from this assignment
+from http://mathworld.wolfram.com/HypercubeLinePicking.html
+
+this function should also be dependent on the number of vertices
+*/
+
+    EdgeWeight exp0 = 0.3333333;
+    EdgeWeight exp2 = 0.5214054;
+    EdgeWeight exp3 = 0.6617072;
+    EdgeWeight exp4 = 0.7776657;
+    switch (dimension) {
+        case 0:
+            return exp0;
+            break;
+        case 2:
+            return exp2;
+            break;
+        case 3:
+            return exp3;
+            break;
+        case 4:
+            return exp4;
+            break;
+        default:
+            error(1,"k: invalid dimension","");
+            return 1;
+            break;
+    }
 }
 
 /*

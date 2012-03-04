@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <time.h>
 
 #include "utils.h"
 #include "graph.h"
@@ -29,6 +30,9 @@ int main(int argc, char * argv[]) {
     if (flag != 0)
         printf("flag\n");
 
+    // seed random number generator
+    srandom(time(NULL));
+
     Graph *g;
     EdgeWeight weight[numtrials]; // storage for several MST weights
 
@@ -39,6 +43,8 @@ int main(int argc, char * argv[]) {
         // compute MST and weight
         Edge *mst = kruskal(g);
         weight[i] = compute_mst_weight(g, mst);
+        destroy_edge_array(mst);
+        destroy_graph(g);
     }
 
     /* report results */
@@ -56,10 +62,19 @@ int main(int argc, char * argv[]) {
 
 EdgeWeight compute_mst_weight(Graph *g, Edge *mst) {
     int i;
+    // testing only:
+    //EdgeWeight max = 0.0; 
     EdgeWeight tot_weight = 0.0;
     for (i = 0; i < get_num_vertices(g) - 1; i++) {
-        tot_weight += get_cost(&mst[i]);
+        //testing only
+        //if (get_cost(&mst[i]) > max)
+        //    max = get_cost(&mst[i]);
+
+         tot_weight += get_cost(&mst[i]);
     }
+    // testing only:
+    //printf("dim: %d num vertices: %d max weight: %f\n",
+    //    get_dimension(get_vertex(g,0)), get_num_vertices(g), max);
     return tot_weight;
 }
 

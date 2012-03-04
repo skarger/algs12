@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <time.h>
 #include <stdio.h>
 #include <math.h>
 
@@ -44,7 +43,6 @@ void load_graph(Graph *g, int dimension) {
  *         given that it is an undirected graph
  */
 void make_interval_edge_weights(Graph *g) {
-    srandom(time(NULL));
     EdgeWeight *ep;
     Vertex *vp = get_vertex(g, 0);
     int vertex_idx = 0;
@@ -90,7 +88,6 @@ void set_euclidean_edge_weights(Vertex *v, Vertex *w) {
 
 
 void set_random_coordinates(Graph *g, int dim) {
-    srandom(time(NULL));
     Vertex *vp = get_vertex(g, 0);
     float *coordinates;
     int i;
