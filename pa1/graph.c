@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "randmst.h"
 #include "graph.h"
 #include "utils.h"
 

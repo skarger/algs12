@@ -143,6 +143,11 @@ DSItem *get_parent(DSItem *x) {
     return x->p;
 }
 
+DSItem *get_item_by_index(Disjoint_Set *ds, int idx) {
+    DSItem *items = get_items(ds);
+    return &items[idx];
+}
+
 void set_rank(DSItem *x, int rank) {
     x->rank = rank;
 }

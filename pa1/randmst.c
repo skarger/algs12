@@ -5,7 +5,10 @@
 #include "utils.h"
 #include "graph.h"
 #include "random_graph.h"
-#include "randmst.h"
+#include "disjoint_set.h"
+#include "kruskal.h"
+
+EdgeWeight compute_mst_weight(Graph *g, Edge *edges);
 
 int main(int argc, char * argv[]) {
     /* input validation */
@@ -22,22 +25,21 @@ int main(int argc, char * argv[]) {
         error(2,"randmst: dimension must be 0, 2, 3, or 4\n","");
     }
 
+    // keep compiler from complaining about unused variables
     if (flag != 0)
         printf("flag\n");
 
-
-    Graph *g = create_random_graph(dim, numpoints);
-    double weight[numtrials]; // storage for MST weight
+    Graph *g;
+    EdgeWeight weight[numtrials]; // storage for several MST weights
 
     /* compute MST and weight */
-
     int i;
     for (i = 0; i < numtrials; i++) {
-        // g = ...
+        g = create_random_graph(dim, numpoints);
         // compute MST and weight
-        weight[i] = 1;
+        Edge *mst = kruskal(g);
+        weight[i] = compute_mst_weight(g, mst);
     }
-
 
     /* report results */
     double avg = 0.0;
@@ -50,5 +52,14 @@ int main(int argc, char * argv[]) {
     printf("%f %d %d %d\n", avg, numpoints, numtrials, dim);
 
     return 0;
+}
+
+EdgeWeight compute_mst_weight(Graph *g, Edge *mst) {
+    int i;
+    EdgeWeight tot_weight = 0.0;
+    for (i = 0; i < get_num_vertices(g) - 1; i++) {
+        tot_weight += get_cost(&mst[i]);
+    }
+    return tot_weight;
 }
 

@@ -4,13 +4,13 @@ LIBS=-lm
 randmst: randmst.o graph.o random_graph.o disjoint_set.o kruskal.o utils.o
 	$(CC) $(CFLAGS) $(LIBS) randmst.o graph.o random_graph.o disjoint_set.o kruskal.o utils.o -o randmst
 
-randmst.o: randmst.c randmst.h graph.h random_graph.h utils.h
+randmst.o: randmst.c kruskal.h disjoint_set.h graph.h random_graph.h utils.h
 	$(CC) $(CFLAGS) -c randmst.c
 
 kruskal: kruskal.o disjoint_set.o random_graph.o graph.o utils.o
 	$(CC) $(CFLAGS) $(LIBS) kruskal.o disjoint_set.o random_graph.o graph.o utils.o -o kruskal
 
-kruskal.o: kruskal.c disjoint_set.h random_graph.h graph.h utils.h
+kruskal.o: kruskal.c kruskal.h disjoint_set.h random_graph.h graph.h utils.h
 	$(CC) $(CFLAGS) -c kruskal.c
 
 disjoint_set: disjoint_set.o utils.o

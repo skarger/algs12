@@ -23,6 +23,7 @@ void union_ds(Disjoint_Set *ds, DSItem *x, DSItem *y);
 
 DSItem *create_items(int num_items);
 DSItem *get_items(Disjoint_Set *ds);
+DSItem *get_item_by_index(Disjoint_Set *ds, int idx);
 void increment_num_sets(Disjoint_Set *ds);
 void decrement_num_sets(Disjoint_Set *ds);
 
