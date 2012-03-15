@@ -1,0 +1,6 @@
+randmst
+strassen
+
+*.o
+
+.DS_Store*
