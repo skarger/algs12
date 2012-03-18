@@ -1,5 +1,9 @@
 CFLAGS = -Wall
 LIBS=-lm
+JC = javac
+
+default: strassen 
+	$(JC) *.java
 
 strassen: strassen.o utils.o
 	$(CC) $(CFLAGS) $(LIBS) strassen.o utils.o -o strassen
@@ -13,6 +17,8 @@ utils: utils.o
 utils.o: utils.c utils.h
 	$(CC) $(CFLAGS) -c utils.c
 
-clean:
-	rm *.o
+
+clean: default
+	rm *.o 
+
 

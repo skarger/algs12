@@ -2,5 +2,6 @@ randmst
 strassen
 
 *.o
+*.class
 
 .DS_Store*
