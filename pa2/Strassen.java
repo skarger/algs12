@@ -25,6 +25,8 @@ public class Strassen {
 
         int mat1[][] = new int[dimension][dimension];
         int mat2[][] = new int[dimension][dimension];
+        int mat3[][] = new int[dimension][dimension];
+        int mat4[][] = new int[dimension][dimension];
 
         int check = 0; // to check number of values
         check = check + read_matrix(sc, mat1, dimension);
@@ -36,6 +38,27 @@ public class Strassen {
         sc.close();
         in.close();
 
+        Matrix m1 = new Matrix(dimension, dimension, mat1);
+        Matrix m2 = new Matrix(dimension, dimension, mat2);
+        m1.show();
+        System.out.println();
+        m2.show();
+
+        System.out.println();
+        Matrix m3 = new Matrix(dimension, dimension, mat3);
+
+        Stopwatch sw = new Stopwatch();
+        long tm_mult, tm_mult_con;
+
+        sw.start();
+        Matrix.multiply(m1, m2, m3, dimension, dimension);
+        sw.stop();
+        tm_mult = sw.getElapsedTime();
+
+        m3.show();
+
+        
+/*
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < mat1.length; j++)
                 System.out.print(mat1[i][j] + " ");
@@ -48,6 +71,7 @@ public class Strassen {
             System.out.println();
         }
         System.out.println();
+*/
     }
 
     private static int read_matrix(Scanner sc, int[][] mat, int dimension) {

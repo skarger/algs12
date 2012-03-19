@@ -11,6 +11,12 @@ strassen: strassen.o utils.o
 strassen.o: strassen.c utils.h
 	$(CC) $(CFLAGS) -c strassen.c
 
+random_input: random_input.o utils.o
+	$(CC) $(CFLAGS) $(LIBS) random_input.o utils.o -o random_input
+
+random_input.o: random_input.c utils.h
+	$(CC) $(CFLAGS) -c random_input.c
+
 utils: utils.o
 	$(CC) $(CFLAGS) $(LIBS) utils.o -o utils
 
