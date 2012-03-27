@@ -1,0 +1,71 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{algorithmic}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\usepackage{enumerate}
+
+\title{CS E124 Programming Assignment 2}
+\author{Stephen Karger}
+\date{March 31, 2012}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+\section{Analysis of optimal cross-over point}
+Assuming that the cost of any single arithmetic operation (adding, subtracting, multiplying, or dividing two real numbers) is 1, the following equations model conventional matrix multiplication and Strassen's algorithm.
+\begin{flalign*}
+\text{Conventional: } & 2n^{3} - n^{2} & \\
+\text{Strassen: } & 6n^{2 + log(7/4)} + n^{log\,7} - 6n^{2} &
+\end{flalign*}
+Derivation: \\
+For each individual entry in the matrix product, the conventional algorithm performs $n$ multiplications. Then it takes $n-1$ additions to combine them, for $2n - 1$ total operations. Since there are $n^2$ elements to compute, the number of operations for the entire algorithm is $2n^3 - n^2$. \\
+\\
+In Strassen's algorithm multiplying an $n$ x $n$ matrix involves 10 additions or subtractions of dimension $n/2$ matrices to compute $P_1$ through $P_7$, then 7 multiplications of dimension $n/2$ matrices using $P_1 \dots P_7$, and finally 8 additions of dimension $n/2$ matrices to combine the results. Adding matrices of dimension $n/2$ requires $(\frac{n}{2})^2$ real number additions, so a recurrence relation for the number of multiplications is $T(n) = 18(\frac{n}{2})^2 + 7T(n/2)$. \\
+\\
+Clearly $T(1) = 1$. Expanding the recurrence relations yields
+\begin{flalign*}
+T(n) &= 18 \left (\frac{n}{2} \right )^2 + 7T(n/2) = 18 \left (\frac{n}{2} \right )^2 + 7\ \left [  18 \left (\frac{n}{4} \right )^2 + 7T(n/4)  \right ] & \\
+&= 18 \left (\frac{n}{2} \right )^2 + 7\ \left [  18 \left (\frac{n}{4} \right )^2 + 7 \left [ 18 \left (\frac{n}{8} \right )^{2} + 7T(n/8)  \right ]  \right ] & \\
+&= 18 \left (\frac{n}{2} \right )^2 + 7*18 \left (\frac{n}{4} \right )^2 + 7^2*18 \left (\frac{n}{8} \right )^{2} + \cdots + 7^{log\,n - 1} \left (18 \left ( \frac{n}{2^{log\,n}} \right )^{2} + 7  \left ( \frac{n}{2^{log\,n}} \right )^{2} \right ) & \\
+&= 7^{log\,n} + \sum_{0}^{log\,n - 1} 7^i * 18 \left (\frac{n}{2^{i+1}} \right )^2 = 7^{log\,n} + 18 \left (\frac{n}{2} \right )^2 \sum_{0}^{log\,n - 1} \left ( \frac{7}{4} \right )^{i}
+\end{flalign*}
+\\
+Using the geometric series formula for the sum above gives
+\begin{flalign*}
+T(n) &= 7^{log\,n} + 18 \left (\frac{n}{2} \right )^2 \sum_{0}^{log\,n - 1} \left ( \frac{7}{4} \right )^{i} = 7^{log\,n} + 18 \left ( \frac{n}{2} \right )^2 * \frac{1 - \left ( \frac{7}{4} \right )^{log\,n} } {1 - \frac{7}{4} }
+\end{flalign*}
+Finally, using the fact that $a^{log\,b} = b^{log\,a}$ and simplifying algebraically 
+\begin{flalign*}
+T(n) &= n^{log\,7} + 18 \left ( \frac{n}{2} \right )^2 * \frac{1 - n^{log \left ( \frac{7}{4} \right )} } { 1 - \left ( \frac{7}{4} \right ) } =
+n^{log\,7} + 18 \left ( \frac{n}{2} \right )^2 * \frac{n^{log \left ( \frac{7}{4} \right )}} { \frac{7}{4} - 1 } \\
+&= n^{log\,7} + 18 \left ( \frac{n^{2}}{4} \right ) * \frac{ n^{log \left ( \frac{7}{4} \right )} - 1} { \frac{3}{4} } = 
+n^{log\,7} + 6n^{2} \left ( n^{log \left ( \frac{7}{4} \right )} - 1 \right ) \\
+&= n^{log\,7} + 6n^{2 + log \left ( \frac{7}{4} \right )} - 6n^2 \\
+&= 6n^{2 + log(7/4)} + n^{log\,7} - 6n^{2}
+\end{flalign*}
+Comparing these two functions, Strassen's algorithm requires more operations than the conventional method until the matrices have dimension 655, so the estimate for $n_0 = 655$. \\
+
+\begin{tabular}{l|l|l}
+n & Conventional & Strassen \\  \hline
+650 & 548827500 & 549471506 \\
+651 & 551365101 & 551851137 \\
+652 & 553910512 & 554237392 \\
+653 & 556463745 & 556630282 \\
+654 & 559024812 & 559029813 \\
+655 & 561593725 & 561435994 \\
+656 & 564170496 & 563848833 \\
+657 & 566755137 & 566268339 \\
+658 & 569347660 & 568694520 \\
+659 & 571948077 & 571127384 \\
+660 & 574556400 & 573566938
+\end{tabular}
+
+\end{document} 
