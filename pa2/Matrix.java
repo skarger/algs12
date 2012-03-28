@@ -27,17 +27,17 @@ public class Matrix {
     }
 
     // Populate C = A * B
-    // note that caller must provide destination matrix C
-    public static void multiply(Matrix A, Matrix B, Matrix C, int M, int N) {
-        if (M != N) throw new RuntimeException("Illegal dimensions.");
-        for (int i = 0; i < M; i++)
-            for (int j = 0; j < N; j++)
-                for (int k = 0; k < N; k++) {
-                    // conventional path:
-                    // C.data[i][j] += (A.data[i][k] * B.data[k][j]);
-
+    // note that caller must provide destination storage
+    public static void multiply(MatrixReference A, MatrixReference B, MatrixReference C) {
+    	if (A.dimension != B.dimension)
+    		throw new IllegalArgumentException("Illegal dimensions");
+        for (int i = 0; i < A.dimension; i++)
+            for (int j = 0; j < A.dimension; j++)
+                for (int k = 0; k < A.dimension; k++) {
                     // superior cache performance path:
-                    C.data[i][k] += (A.data[i][j] * B.data[j][k]);
+                    C.matrix.data[i + C.startRow][k + C.startCol] += 
+                    	(A.matrix.data[i + A.startRow][j + A.startCol] * 
+                    	 B.matrix.data[j + B.startRow][k + B.startCol]);
                 }
     }
 
@@ -62,5 +62,7 @@ public class Matrix {
             System.out.println();
         }
     }
+    
+
 
 }

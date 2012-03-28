@@ -13,14 +13,14 @@ public class Strassen {
 
         int dimension = 0;
         try {
-            dimension = Integer.parseInt(args[2]);
+            dimension = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
-            System.out.println("dimension must be an integer");
+            System.out.println("dimension must be an integer: " + args[1]);
             System.exit(2);
         }
 
         FileReader in = null;               
-        in = openInputFile(args[1]);
+        in = openInputFile(args[2]);
         Scanner sc = new Scanner(in);
 
         int mat1[][] = new int[dimension][dimension];
@@ -46,12 +46,21 @@ public class Strassen {
 
         System.out.println();
         Matrix m3 = new Matrix(dimension, dimension, mat3);
+/*
+		MatrixReference mr1 = new MatrixReference(m1, dimension, 0, 0);
+		MatrixReference mr2 = new MatrixReference(m2, dimension, 0, 0);
+		MatrixReference mr3 = new MatrixReference(m3, dimension, 0, 0);
+*/
+
+		MatrixReference mr1 = new MatrixReference(m1, 2, 0, 0);
+		MatrixReference mr2 = new MatrixReference(m2, 2, 0, 0);
+		MatrixReference mr3 = new MatrixReference(m3, 2, 0, 0);
 
         Stopwatch sw = new Stopwatch();
         long tm_mult, tm_mult_con;
 
         sw.start();
-        Matrix.multiply(m1, m2, m3, dimension, dimension);
+        Matrix.multiply(mr1, mr2, mr3);
         sw.stop();
         tm_mult = sw.getElapsedTime();
 
