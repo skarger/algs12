@@ -19,6 +19,8 @@ public class Strassen {
             System.exit(2);
         }
 
+        // calculations if dimension != 2^k
+
         FileReader in = null;               
         in = openInputFile(args[2]);
         Scanner sc = new Scanner(in);
@@ -46,12 +48,18 @@ public class Strassen {
 
         System.out.println();
         Matrix m3 = new Matrix(dimension, dimension, mat3);
-/*
-		MatrixReference mr1 = new MatrixReference(m1, dimension, 0, 0);
-		MatrixReference mr2 = new MatrixReference(m2, dimension, 0, 0);
-		MatrixReference mr3 = new MatrixReference(m3, dimension, 0, 0);
+
+/* pseudo after creating final input matrices
+    // storage for intermediate calculations
+    // 10 sums
+    // 7 products
+    
+    // 8 combining sums should go in destination
+    
 */
 
+
+/* testing */
 		MxMap mr1 = new MxMap(4, 4, 0, 0);
 		MxMap mr2 = new MxMap(4, 4, 0, 0);
 		MxMap mr3 = new MxMap(4, 4, 0, 0);
@@ -66,7 +74,13 @@ public class Strassen {
 
         m3.show();
 
-        
+
+        System.out.println("OO difference");
+        Matrix sumM = m1.minus(m2);
+        sumM.show();        
+        System.out.println("static difference");
+        Matrix._minus(m1, mr1, m2, mr2, m3);
+        m3.show();
 /*
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < mat1.length; j++)

@@ -36,7 +36,7 @@ public class Matrix {
         return C;
     }
 
-    // helper method to populate C = A * B
+    // populate C = A * B
     // note that caller must provide destination storage and
     // maps telling what parts of matrices to multiply
     public static void _multiply(Matrix A, MxMap mA, Matrix B, MxMap mB,
@@ -66,11 +66,25 @@ public class Matrix {
         Matrix A = this;
         if (B.M != A.M || B.N != A.N)
             throw new RuntimeException("Illegal matrix dimensions.");
-        Matrix C = new Matrix(M, N);
-        for (int i = 0; i < M; i++)
-            for (int j = 0; j < N; j++)
-                C.data[i][j] = A.data[i][j] + B.data[i][j];
+        int[][] data = new int[A.M][A.N];
+        Matrix C = new Matrix(M, N, data);
+        MxMap mA = new MxMap(this.M, this.N, 0, 0);
+        MxMap mB = new MxMap(B.M, B.N, 0, 0);
+        _plus(A, mA, B, mB, C);
         return C;
+    }
+
+    public static void _plus(Matrix A, MxMap mA, Matrix B, MxMap mB, Matrix C) {
+        int asr = mA.getStartRow();
+        int asc = mA.getStartCol();
+        int bsr = mB.getStartRow();
+        int bsc = mB.getStartCol();
+        for (int i = 0; i < mA.getRowDim(); i++)
+            for (int j = 0; j < mA.getColDim(); j++) {
+                C.data[i][j] =
+                A.data[asr + i][asc + j] +
+                B.data[bsr + i][bsc + j];
+            }
     }
 
 
@@ -79,13 +93,27 @@ public class Matrix {
         Matrix A = this;
         if (B.M != A.M || B.N != A.N)
             throw new RuntimeException("Illegal matrix dimensions.");
-        Matrix C = new Matrix(M, N);
-        for (int i = 0; i < M; i++)
-            for (int j = 0; j < N; j++)
-                C.data[i][j] = A.data[i][j] - B.data[i][j];
+        int[][] data = new int[A.M][A.N];
+        Matrix C = new Matrix(M, N, data);
+        MxMap mA = new MxMap(this.M, this.N, 0, 0);
+        MxMap mB = new MxMap(B.M, B.N, 0, 0);
+        _minus(A, mA, B, mB, C);
         return C;
     }
 
+    public static void _minus(Matrix A, MxMap mA, Matrix B, MxMap mB,
+                            Matrix C) {
+        int asr = mA.getStartRow();
+        int asc = mA.getStartCol();
+        int bsr = mB.getStartRow();
+        int bsc = mB.getStartCol();
+        for (int i = 0; i < mA.getRowDim(); i++)
+            for (int j = 0; j < mA.getColDim(); j++) {
+                C.data[i][j] =
+                A.data[asr + i][asc + j] -
+                B.data[bsr + i][bsc + j];
+            }
+    }
 
     // does A = B exactly?
     public boolean eq(Matrix B) {
