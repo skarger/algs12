@@ -52,15 +52,15 @@ public class Strassen {
 		MatrixReference mr3 = new MatrixReference(m3, dimension, 0, 0);
 */
 
-		MatrixReference mr1 = new MatrixReference(m1, 2, 0, 0);
-		MatrixReference mr2 = new MatrixReference(m2, 2, 0, 0);
-		MatrixReference mr3 = new MatrixReference(m3, 2, 0, 0);
+		MxMap mr1 = new MxMap(4, 4, 0, 0);
+		MxMap mr2 = new MxMap(4, 4, 0, 0);
+		MxMap mr3 = new MxMap(4, 4, 0, 0);
 
         Stopwatch sw = new Stopwatch();
         long tm_mult, tm_mult_con;
 
         sw.start();
-        Matrix.multiply(mr1, mr2, mr3);
+        Matrix._multiply(m1, mr1, m2, mr2, m3);
         sw.stop();
         tm_mult = sw.getElapsedTime();
 
