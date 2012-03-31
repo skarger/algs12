@@ -68,18 +68,25 @@ public class Strassen {
         long tm_mult, tm_mult_con;
 
         sw.start();
-        Matrix._multiply(m1, mr1, m2, mr2, m3);
+        m3 = m1.strassen(m2);
         sw.stop();
         tm_mult = sw.getElapsedTime();
 
         m3.show();
 
 
+        System.out.println();
         System.out.println("OO difference");
         Matrix sumM = m1.minus(m2);
         sumM.show();        
         System.out.println("static difference");
-        Matrix._minus(m1, mr1, m2, mr2, m3);
+        Matrix._minus(m1, mr1, m2, mr2, m3, mr3);
+        m3.show();
+
+
+        System.out.println();
+        System.out.println("static plus");
+        Matrix._plus(m1, mr1, m2, mr2, m3, mr3);
         m3.show();
 /*
         for (int i = 0; i < dimension; i++) {
