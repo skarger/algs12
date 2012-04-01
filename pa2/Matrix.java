@@ -578,7 +578,12 @@ public class Matrix {
             System.out.println();
         }
     }
-    
+
+    public void showDiagonal() {
+        for (int i = 0; i < M; i++)
+            System.out.printf("%d \n", data[i][i]);
+        System.out.println(); // trailing newline
+    }
 
     // return logarithm base 2 of input
     private static double log2(double x) {

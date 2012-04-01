@@ -48,29 +48,8 @@ public class Strassen {
         Matrix m2 = new Matrix(dimension, dimension, data2);
 
         Matrix m3 = new Matrix(dimension, dimension, data3);
-
-
-        /* testing
-        Stopwatch sw = new Stopwatch();
-        long tm_mult_con, tm_mult_str;
-
-        sw.start();
         m3 = m1.strassen(m2);
-        sw.stop();
-        tm_mult_str = sw.getElapsedTime();
-        m3.show();
-
-        System.out.println();
-        sw.reset();
-        sw.start();
-        m4 = m1.multiply(m2);
-        sw.stop();
-        tm_mult_con = sw.getElapsedTime();
-        m4.show();
-
-        System.out.println();
-        System.out.println("S " + tm_mult_str + " C " + tm_mult_con);
-        end testing */
+        m3.showDiagonal();
 
     }
 
