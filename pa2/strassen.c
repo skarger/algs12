@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
     int exit_status = 0;
     char cmd[MAX_COMMAND_LENGTH + 1];
     snprintf(cmd, MAX_COMMAND_LENGTH, 
-            "java Strassen %s %s %s", argv[1], argv[2], argv[3]);
+            "java -Xmx2048m Strassen %s %s %s", argv[1], argv[2], argv[3]);
     exit_status = system(cmd);
 
     return exit_status;

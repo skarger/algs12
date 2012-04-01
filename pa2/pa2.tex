@@ -67,5 +67,44 @@ n & Conventional & Strassen \\  \hline
 659 & 571948077 & 571127384 \\
 660 & 574556400 & 573566938
 \end{tabular}
+\\
+\section{Implementation and experimental results}
+\begin{tabular}{l|l|l|l}
+n & $n_0$ & Conventional (m sec) & Strassen (m sec) \\  \hline
+256 & 255 & 26 & 66 \\
+512 & 511 & 198 & 228 \\
+1024 & 655 & 1573 & 1477 \\
+2048 & 655 & 13317 & 10086 \\
+2048 & 1025 & 13428 & 11238 \\
+4096 & 655 & 105000 & 70054 \\
+4096 & 1025 & 105305 & 78530 \\
+4096 & 2049 & 104974 & 94452
+\end{tabular}
+\\
+\\
+\\
+Experimentally I found that 655 is still the optimal cutoff value. (Actually it may be somewhere between 512 - 1023, but my implementation only supports dimensions that are powers of 2, so I cannot investigate at a finer resolution.) For matrices of dimension less than 655 (512) the conventional algorithm is faster. As I increase the cutoff, Strassen's algorithm remains faster than the conventional algorithm, but not quite as fast as when using $n_0 = 655$. \\
+\\
+Optimizations:  \\
+For Strassen's algorithm I followed the hints to avoid unnecessary memory allocation and to avoid copying large amounts of data. \\
+\\
+A more straightforward implementation would allocate memory for each intermediate calculation at the moment it is needed, not before.  In contrast my implementation allocates all memory used for the intermediate calculations ahead of time, based on the dimension of the input matrices. Furthermore, for a given dimension $k < n$, Strassen's algorithm will multiply some number of sub-matrices with dimension $k$. I do not allocate distinct memory for all of those multiplications. Instead, I allocate enough memory for the sub-calculations involved in \emph{one} multiplication of matrices with dimension $k$. Then I re-use that memory for computing each sub-matrix, one-by-one.
+\\
+\\
+To avoid copying, I created a bookkeeping object, MxMap, that provides the coordinates of the data to multiply within a given matrix, or the coordinates on the destination matrix where the results should go. Ultimately the four sub-sums of any matrix product are computed on the product matrix itself, up to and including the final matrix returned to the caller. Results are never copied from one piece of storage to another.
+\\
+\\
+For conventional multiplication I used a looping order that improved over the naive order by a factor of 6. Instead of computing each element fully before moving on to the next, I partially compute a sum for every element in each row of the product. Evidently this allows more data to be accessed directly from the CPU cache than the naive method. \\
+\begin{verbatim}
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                for (int k = 0; k < n; k++) {
+                    // conventional path:
+                    C.data[i][j] +=  (A.data[i][k] * B.data[k][j]);
+                    // superior cache performance path:
+                    C.data[i][k] +=  (A.data[i][j] * B.data[j][k]);
+                }               
+\end{verbatim}
+
 
 \end{document} 

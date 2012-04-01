@@ -11,6 +11,10 @@ public class Strassen {
      */ 
     public static void main(String[] args) throws IOException {
 
+        int cutoff = Integer.parseInt(args[0]);
+        if (cutoff > 0)
+            Matrix.setCutoff(cutoff);
+
         int dimension = 0;
         try {
             dimension = Integer.parseInt(args[1]);
@@ -25,14 +29,14 @@ public class Strassen {
         in = openInputFile(args[2]);
         Scanner sc = new Scanner(in);
 
-        int mat1[][] = new int[dimension][dimension];
-        int mat2[][] = new int[dimension][dimension];
-        int mat3[][] = new int[dimension][dimension];
-        int mat4[][] = new int[dimension][dimension];
+        int data1[][] = new int[dimension][dimension];
+        int data2[][] = new int[dimension][dimension];
+        int data3[][] = new int[dimension][dimension];
+        int data4[][] = new int[dimension][dimension];
 
         int check = 0; // to check number of values
-        check = check + read_matrix(sc, mat1, dimension);
-        check = check + read_matrix(sc, mat2, dimension);
+        check = check + read_matrix(sc, data1, dimension);
+        check = check + read_matrix(sc, data2, dimension);
         if (check < 2 * (int) Math.pow(dimension,2) )
             throw new IllegalArgumentException("input file " +
                                     "has too few values");
@@ -40,68 +44,34 @@ public class Strassen {
         sc.close();
         in.close();
 
-        Matrix m1 = new Matrix(dimension, dimension, mat1);
-        Matrix m2 = new Matrix(dimension, dimension, mat2);
-        m1.show();
-        System.out.println();
-        m2.show();
+        Matrix m1 = new Matrix(dimension, dimension, data1);
+        Matrix m2 = new Matrix(dimension, dimension, data2);
 
-        System.out.println();
-        Matrix m3 = new Matrix(dimension, dimension, mat3);
-
-/* pseudo after creating final input matrices
-    // storage for intermediate calculations
-    // 10 sums
-    // 7 products
-    
-    // 8 combining sums should go in destination
-    
-*/
+        Matrix m3 = new Matrix(dimension, dimension, data3);
 
 
-/* testing */
-		MxMap mr1 = new MxMap(4, 4, 0, 0);
-		MxMap mr2 = new MxMap(4, 4, 0, 0);
-		MxMap mr3 = new MxMap(4, 4, 0, 0);
-
+        /* testing
         Stopwatch sw = new Stopwatch();
-        long tm_mult, tm_mult_con;
+        long tm_mult_con, tm_mult_str;
 
         sw.start();
         m3 = m1.strassen(m2);
         sw.stop();
-        tm_mult = sw.getElapsedTime();
-
+        tm_mult_str = sw.getElapsedTime();
         m3.show();
 
+        System.out.println();
+        sw.reset();
+        sw.start();
+        m4 = m1.multiply(m2);
+        sw.stop();
+        tm_mult_con = sw.getElapsedTime();
+        m4.show();
 
         System.out.println();
-        System.out.println("OO difference");
-        Matrix sumM = m1.minus(m2);
-        sumM.show();        
-        System.out.println("static difference");
-        Matrix._minus(m1, mr1, m2, mr2, m3, mr3);
-        m3.show();
+        System.out.println("S " + tm_mult_str + " C " + tm_mult_con);
+        end testing */
 
-
-        System.out.println();
-        System.out.println("static plus");
-        Matrix._plus(m1, mr1, m2, mr2, m3, mr3);
-        m3.show();
-/*
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < mat1.length; j++)
-                System.out.print(mat1[i][j] + " ");
-            System.out.println();
-        }
-        System.out.println();
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < mat1.length; j++)
-                System.out.print(mat2[i][j] + " ");
-            System.out.println();
-        }
-        System.out.println();
-*/
     }
 
     private static int read_matrix(Scanner sc, int[][] mat, int dimension) {

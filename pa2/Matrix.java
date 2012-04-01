@@ -9,7 +9,7 @@ import java.util.Hashtable;
 * http://introcs.cs.princeton.edu/java/95linear/Matrix.java.html
 */
 public class Matrix {
-    int STRASSEN_N0 = 2;          // threshold for conventional mult
+    private static int STRASSEN_N0 = 655;   // threshold for conventional mult
     private final int M;             // number of rows
     private final int N;             // number of columns
     private final int[][] data;      
@@ -33,7 +33,14 @@ public class Matrix {
     }
 
 
-    /* class methods */
+    /* methods */
+    public static void setCutoff(int cu) {
+        STRASSEN_N0 = cu;
+    }
+
+    public static int getCutoff() {
+        return STRASSEN_N0;
+    }
 
     // create matrix, no data
     public Matrix(int M, int N) {
