@@ -17,20 +17,24 @@ public class MxMap {
 		startCol = sc;
 	}
 
-    public int getRowDim() {
+    public int rowDim() {
         return dimM;
     }
 
-    public int getColDim() {
+    public int colDim() {
         return dimN;
     }
 
-    public int getStartRow() {
+    public int startRow() {
         return startRow;
     }
 
-    public int getStartCol() {
+    public int startCol() {
         return startCol;
+    }
+
+    public String toString() {
+        return dimM + ", " + dimN + ", " + startRow + ", " + startCol;
     }
 }
 
