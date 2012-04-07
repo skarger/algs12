@@ -1,0 +1,82 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+
+
+\title{}
+\author{}
+\date{}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+%\section{}
+%\subsection{}
+
+\section{Random Harvard IDs}
+First imagine there are two people in the room. There is a $\frac{1}{10}$ probability that the two IDs match at the $i$th digit. For any substring of length $k$ in the ID, the probability that all $k$ digits match is $\frac{1}{10^{k}}$. Conversely, the probability that the two substrings differ somehow is $1 - \frac{1}{10^{k}}$. \\
+\\
+Now consider increasing numbers of people in the room. Assuming that the first two people do not duplicate each other on a given $k$-length substring, there are two different substrings present when the third person enters. Therefore the third person duplicates one of the substrings with probability $\frac{2}{10^{k}}$. So the total probability that the three substrings do not duplicate each other is
+$\left ( 1 - \frac{1}{10^{k}} \right )  \left (1 -  \frac{2}{10^{k}} \right )$. Generally, when there are $n$ people in the room the probability that all $k$-length substrings differ is $\left ( 1 - \frac{1}{10^{k}} \right )  \left (1 -  \frac{2}{10^{k}} \right ) \cdots  \left (1 - \frac{n-1}{10^{k}} \right )$
+\\
+\\
+Thus the questions below require the value of $n$ that makes this equation drop below $\frac{1}{2}$ for different values of $k$.
+\\
+\begin{itemize}
+\item How many people would you need to have in a room before it was more likely than not that two had the same last four digits? \\
+$k = 4 \Rightarrow n = 119$ \\
+Each digit is independent. In particular the probability that an $m$ digit ID has the same last four digits as some other $m$ digit ID is the same regardless of $m$.
+\item How many numbers could be issued before it would be more likely than not that there is a duplicate Harvard ID number? \\
+$k = 8 \Rightarrow n = 11775$ \\
+In this case the substring is the full ID.
+\item What would the answers for the above questions be if there were 12 digit ID numbers?
+$k = 4 \Rightarrow n = 119$ \\
+$k = 12 \Rightarrow n = 1177411$
+\end{itemize}
+
+\section{e proofs}
+
+\section{Document Similarity}
+Assume that $D$ and $E$ are two documents, and we have created 84 element original sketches for both and divided each sketch into 6 groups of 14 permutations, $G_{1D} \dots G_{6D}$ and $G_{1E} \dots G_{6E}$. Consider one pair of these groups, say $G_{1D}, G_{1E}$. Because the resemblance of $D$ and $E$ is $r$, we expect that $14 * r$ of the elements match between the two groups.
+\\
+\\
+If it happens that all 14 elements match then the super-sketch values will agree, because they will agree on all 14 of the re-hashed values, and thus they will agree on the minimum of that set. It is possible that the super-sketch values will agree if fewer than 14 elements match; even if only 1 out of the 14 elements matches it is possible that this value will be the minimum after re-hashing. Therefore I find it puzzling how the question text asserts that it makes sense to assume that the super-sketch values will match only when all 14 values match. I'm aware that on Piazza it was emphasized that we are assuming this, not calling it a fact. Nevertheless it still seems like an odd assumption. Say 13 out of 14 values match - there is a 13/14 probability that the super-sketch values will match.
+
+\begin{verbatim}
+Qualitatively the likelihood of collisions on both hashing steps is greater with fewer bits, so documents are more likely to be flagged as duplicates. Quantitatively it seems very complicated. How many collisions we get depends on document length, the document content, and the precise mechanics of how k-word groups are hashed to n-bit numbers.
+
+
+
+
+I still find it puzzling how it makes sense to assume that the super-sketch values will match only when all 14 values match. Other matching circumstances aren't even unlikely necessarily. Say 13 out of 14 values match - then the super-sketch values will match with probability 13/14. Even if only 1 out of the 14 elements matches it is possible that this value will be the minimum after re-hashing.
+
+What I can say is that a given pair of super sketch values will agree with probability r. That's the only justification for the assumption above I can come up with: the super-sketch creation encodes the resemblance so if two super-sketch values match then they are a reasonable proxy for matches in the original sketch. The super-sketch is like flipping a coin with probability r of heads, and if we get heads we call it a match.
+\end{verbatim}
+
+\section{Fingerprint matching} 
+
+\section{Prove that 636127 is composite}
+As discussed in the Lecture 13 notes, a value of $a$ in which $a^{n-1} \ne 1$ mod $n$ is a witness that $n$ is composite. I wrote a program to compute $2^{636127-1}$ mod $636127$, and obtained 195504. Since that is different from 1, 2 is a witness that 636127 is composite. 
+
+\section{RSA}
+The binary representation of ``Give me an A'' denoted by $x$ is \\
+100011111010011110110110010101000001101101110010101000001100001110111001000001000001 \\
+\\
+Your public key is $(n,e) = (46947848749720430529628739081,37267486263679235062064536973)$. \\
+\\
+Hence the encoded message is (in decimal)
+\begin{equation*}
+e(x) = x^{e}\ \mbox{mod}\ n = 41205849232150842891029277111
+\end{equation*}
+
+
+
+\end{document}  
