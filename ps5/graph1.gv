@@ -1,0 +1,46 @@
+digraph h {
+    rankdir=LR;
+    node [shape = circle];
+    subgraph cluster_1 {
+        a->b [ label = "3" ];
+        { edge [style="dashed"];
+            a->b [ label = "3" ];
+        }
+        color=white;
+    }
+
+    subgraph cluster_2 {
+        e
+        color=white;
+    }
+
+    subgraph cluster_3 {
+        c->d [ label = "3" ];
+        color=white;
+    }
+    s->a [ label = "4" ];
+    { edge [style=dashed];
+        s->a [ label = "3" ];
+    }
+    b->t [ label = "4" ];
+    s->c [ label = "5" ];
+    d->t [ label = "3" ];
+    a->d [ label = "2" ];
+    c->a [ label = "1" ];
+    a->e [ label = "1" ];
+    c->e [ label = "1" ];
+    e->t [ label = "2" ];
+
+    edge [style=dashed];
+    b->t [ label = "3" ];
+    c->s [ color=white];
+    e->t [ color=white];
+/*
+    edge [style=dashed];
+    s->a [ label = "4" ];
+    a->b [ label = "3" ];
+    b->t [ label = "3" ];
+    a->e [ label = "1" ];
+    e->t [ label = "1" ];
+*/
+}

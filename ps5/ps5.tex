@@ -8,19 +8,138 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{epstopdf}
+\usepackage{algorithmic}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
 
 
 \title{}
 \author{}
-\date{}                                           % Activate to display a given date or no date
+%\date{}                                           % Activate to display a given date or no date
 
 \begin{document}
 \maketitle
 %\section{}
 %\subsection{}
 
-\section{Trace Ford-Fulkerson}
+\section{Trace Ford-Fulkerson algorithm}
+The method of augmenting paths starts by finding an $s-t$ path. The edge on that path with smallest capacity dictates how much flow can move along the path. (Flow shown as dashed lines.) \\
+\includegraphics [height=6cm] {g0.png}
+\includegraphics [height=7cm] {g1.png} \\
+It continues by finding additional $s-t$ paths and pushing as much flow as possible along them until there is no open path from $s$ to $t$ (subsequent residual networks on next page).
+\includegraphics [height=8cm] {g2.png} 
+\includegraphics [height=9cm] {g3.png} \\
+\includegraphics [height=9cm] {g4.png} 
+\includegraphics [height=9cm] {cut.png} \\
+The min cut divides the vertices into the set $A$ reachable from $s$ and the set $B = V - A.$ The max flow is 8, which is the amount that crosses the min cut.
+\section{Max flow reductions}
+\begin{itemize}
+\item Multiple sources and multiple sinks \\
+\\
+Denote the sources by $s_1, s_2, \dots, s_m$ and the sinks by $t_1, t_2, \dots, t_n$. The original max flow problem has only one source and one sink. Suppose we eliminated all sources and sinks except for $s_1$ and $t_1$ - then we would have an instance of the original max flow problem. Using the following algorithm we can do that sequentially for each source and sink.
+\begin{algorithmic}
+\STATE Initialize residual graph $G_f$ to be just the original network graph $G$.
+\FORALL{$s_i$}
+\FORALL{$t_j$}
+\STATE Using the method of augmenting paths, determine the max flow from $s_i$ to $t_j$.
+\ENDFOR
+\ENDFOR
+\end{algorithmic}
 
+For this to work we must persist the residual graph $G_f$ across each iteration of the for loops, and use it as the starting network for each single source/sink max flow determination. Otherwise we would use the same units of flow multiple times. \\
+\\
+Note that when finding the max flow for a given source and sink $s_i, t_j$, we will never find a path through other sources or sinks. The other sources have no inbound edges, so a path starting at $s_i$ cannot reach them. Similarly, the other sinks have no outbound edges so it is impossible to find a path to $t_j$ that goes through another sink.
+
+\item Both the edges and vertices have capacities \\
+\\
+The original max flow problem only has capacities on edges so we must convert the network to have that format.
+\begin{algorithmic}
+\FORALL{$u \in V$ besides $s$ and $t$}
+\FORALL{outbound edges $(u,v)$}
+\STATE Replace $(u,v)$ with two edges: $(u,u')$ and $(u',v)$
+\STATE Set the capacity of $(u,u')$ to the capacity of vertex $u$
+\STATE Set the capacity of $(u',v)$ to the capacity of the original edge $(u,v)$
+\ENDFOR
+\ENDFOR
+\end{algorithmic}
+
+After creating this new network we can use the augmenting path method for solving the original max flow problem. If necessary, during the conversion we could mark each edge as a ``vertex edge'' or an ``original edge'' so that we could return the final flows in the input format.
+
+\end{itemize}
+
+\section{Flow problem LPs}
+\begin{itemize}
+\item ph
+\end{itemize}
+
+\section{Algorithm to re-compute max flow}
+Given: a maximum ßow in a graph $G = (V,E)$ with source $s$, sink $t$, and integer capacities. \\
+\begin{itemize}
+\item Suppose the capacity of a given edge $e$ is increased by 1. \\
+The algorithm below computes the new max flow. \\
+\\
+Assumptions: The edge whose flow increased is known going in. If not, it can be determined in $O(|E|)$ time by comparing the original capacities of each edge to the current capacities. Call the vertices connected by this edge $u$ and $v$. \\
+\begin{algorithmic}
+\STATE Function MaybeIncreaseFlow
+\STATE Using the given capacities and flow on $G$, resurrect the original residual graph $G_r$
+\STATE Search for a path $P_{su}$ from $s$ to $u$ in $G_r$ using BFS
+\IF{$u$ cannot be reached from $s$ given the available capacities}
+\STATE Max flow does not change, return original values
+\ENDIF
+\STATE Search for a path $P_{vt}$ from $v$ to $t$ in $G_r$ using BFS
+\IF{$t$ cannot be reached from $v$ given the available capacities}
+\STATE Max flow does not change, return original values
+\ENDIF
+\STATE Add 1 unit of flow to each edge along $P_{su}$, $(u,v)$, and $P_{vt}$
+\STATE Increment the max flow value by 1
+\STATE End
+\end{algorithmic}
+Discussion: \\
+Suppose the original min cut divides the vertices of $G$ into $(A,B)$. Even without the increased capacity on $(u,v)$ we can find a path to any vertex in $A$. Therefore if $u$ and $v$ are both in $A$ the increased capacity will not help. To increase the max flow, $(u,v)$ must connect a vertex in $A$ to a vertex in $B$; i.e. it must be on the min cut border. Conversely if $u \in B$ then the algorithm will fail to find the path $P_{su}$ and will return the original values. \\
+\\
+Furthermore, even if $(u,v)$ does connect $A$ to $B$ it is possible that we are still limited by the capacities of subsequent edges along the path from $v$ to $t$. That's why the algorithm must find the path $P_{vt}$ or return the original values. \\
+\\
+If we do find paths $P_{su}, P_{vt}$ then we know that $(u,v)$ completes a path that supports an additional unit of flow from $s$ to $t$. \\
+Initially resurrecting $G_r$ and the flow updates at the end are $O(|E|)$. The two runs of BFS are $O(|V| + |E|)$.
+
+\item Suppose the capacity of a given edge $e$ is decreased by 1. \\
+The algorithm below computes the new max flow. I maintain the same assumption and notation stated above. \\
+\begin{algorithmic}
+\STATE Function MaybeDecreaseFlow
+\STATE Using the given capacities and flow on $G$, resurrect the original residual graph $G_r$
+\STATE Reduce the flow on $e = (u,v)$ by 1
+\STATE Using BFS, search ``backwards'' from $t$ along edges with negative flow in $G_r$
+\STATE Stop when vertex $v$ found. Set $P_{tv}$ := the path from $t$ to $v$
+\STATE Decrement the (postive) flow on each edge along $P_{tv}$, updating $G_r$ accordingly
+\STATE \ 
+\STATE Using BFS, search ``backwards'' from $u$ along edges with negative flow in $G_r$
+\FORALL{edges $e'$ encountered during the BFS above}
+\IF{the flow on $e'$ = $c_{e'}$}
+\STATE Reduce positive flow on $e'$ by 1 (push the flow back)
+\IF{reached vertex $s$}
+\STATE break
+\ENDIF
+\ELSE
+\STATE Found an edge $e'$ where the flow on $e' < c_{e'}$ or
+\STATE break
+\ENDIF
+\ENDFOR
+\STATE Let the final edge considered by the BFS be $e' = (w,x)$
+\STATE Assume that positive flow is directed from $w$ to $x$ (so in the BFS above $x$ would have been found before $w$)
+\STATE Using BFS, search for a path $P_{xt}$ from $x$ to $t$ on $G_r$, taking into account the reduced capacity of $e$ as well as the reduced flow on edges between $x$ and $u$.
+\IF {$P_{xt}$ found}
+\STATE Push 1 unit of flow from $x$ to $t$ along $P_{xt}$, updating $G_r$ accordingly
+\STATE Return the preserved original max flow value
+\ELSE
+\STATE Decrement the max flow value by 1
+\ENDIF
+\end{algorithmic}
+Discussion: \\
+The algorithm starts by decrementing the flow on $e$ and along a set of edges following $e$ to $t$. We might end up re-routing a unit of flow from $e$ back onto along some of those later edges, but as a starting point we clear it off. Note that we should always be able to find the ``backwards'' path $P_{tv}$ on the residual network because we have flow that can be pushed back. \\
+\\
+Then we search backwards again until finding an edge $(w,x)$ that is not filled to capacity. The point is to find a vertex $x$ on the min-cut border. If it turns out that it is possible re-route the flow as to preserve the original max flow, we will need do the re-routing ``forward'' of the min cut. We know that any new path starting from within $A$ (the min cut set including $s$) will not work, because we have already pushed as much flow as possible across the min cut. (As a side note, if both vertices of $e$ lie in $A$ then none of the existing flows are hampered by the decreased capacity, so the max flow remains the same.) \\
+\\
+The question is whether any path exists from $x$ to $t$ that can accomodate 1 unit of flow. Except for the edge $e$ whose capacity decreased, we know at least that we have the capacity to move a unit across all the edges from $x$ to $t$ where we decremented the flow, so we might end up re-using some of those. In particular, we will definitely use the edge that goes from $x$ back across the min cut, using the unit of flow we had freed during the for loop. However we also need at least one other edge with extra capacity in order to complete the needed path $P_{xt}$.
+\\
+\end{itemize}
 \end{document}  

@@ -1,0 +1,27 @@
+digraph g {
+    rankdir=LR;
+    node [shape = circle];
+    subgraph cluster_1 {
+        a->b [ label = "3" ];
+        color=white;
+    }
+
+    subgraph cluster_2 {
+        e
+        color=white;
+    }
+
+    subgraph cluster_3 {
+        c->d [ label = "3" ];
+        color=white;
+    }
+    s->a [ label = "4" ];
+    b->t [ label = "4" ];
+    s->c [ label = "5" ];
+    d->t [ label = "3" ];
+    a->d [ label = "2" ];
+    c->a [ label = "1" ];
+    a->e [ label = "1" ];
+    c->e [ label = "1" ];
+    e->t [ label = "2" ];
+}
