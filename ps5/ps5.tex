@@ -15,7 +15,7 @@
 
 \title{}
 \author{}
-%\date{}                                           % Activate to display a given date or no date
+\date{}                                           % Activate to display a given date or no date
 
 \begin{document}
 \maketitle
@@ -69,7 +69,40 @@ After creating this new network we can use the augmenting path method for solvin
 
 \section{Flow problem LPs}
 \begin{itemize}
-\item ph
+\item At each vertex, half the flow into the vertex is lost (or kept) at the vertex, and the other half flows out. The goal is to maximize the flow that reaches the destination $t$. \\
+\\
+First consider an example. \\
+\includegraphics [height=7cm] {q3ex1.png} \\
+We maintain the same capacity constraints on each edge as in the simple max-flow problem. The difference is that half the flow is lost at each vertex, or equivalently that the flow entering a vertex is equal to twice the flow leaving the vertex. Also the objective function changes to maximize the flow entering $t$ as opposed to maximizing what leaves $s$.
+\begin{align*}
+max\ & & & & f_{AT} & +f_{BT} & \\
+& f_{SA} & & & & & \le 3 \\
+& & f_{SB} & & & & \le 2 \\
+& & & f_{AB} & & & \le 1 \\
+& & & & f_{AT} & & \le 1 \\
+& & & & & f_{BT} & \le 3 \\
+& f_{SA} & & -2f_{AB} & -2f_{AT} & & = 0 \\
+& & f_{SB} & +f_{AB} & & -2 f_{BT} & = 0 \\
+& & & & & & f \ge 0
+\end{align*}
+The general case is similar: For every vertex $v$, add a constraint that the sum of flows entering $v$ is equal to 2 times the sum of flows leaving $v$.
+
+\newpage
+\item For each edge $e$, there is also a fixed cost $c_e$ for each unit of flow through the edge. We need to find the maximum flow with the minimum cost. \\
+\\
+First compute the max flow without edge costs using the LP discussed in class, namely,
+\begin{itemize}
+\item Add capacity constraints for each edge
+\item Add conservation constraints such that $f_{in}(v) = f_{out}(v)$ for all vertices $v$ besides for $s$ and $t$.
+\item Add a constraint that all flows must be non-negative
+\item Maximize the flow from $s$ to $t$, represented by the sum of flows leaving $s$, $f_{out}(s)$.
+\end{itemize}
+Solving this LP derives a max flow value $M$. Next create a new LP to minimize the cost, utilizing $M$ and the edge costs $c_e$.
+\begin{itemize}
+\item Add a constraint that $f_{out}(s) = M$.
+\item Use the same capacity, conservation, and non-negative constraints as in the original LP.
+\item Minimize the sum $f_{e1}c_{e1} + f_{e2}c_{e2} + \cdots = \sum_{e \in E} f_e c_e$
+\end{itemize}
 \end{itemize}
 
 \section{Algorithm to re-compute max flow}
@@ -141,5 +174,62 @@ Then we search backwards again until finding an edge $(w,x)$ that is not filled 
 \\
 The question is whether any path exists from $x$ to $t$ that can accomodate 1 unit of flow. Except for the edge $e$ whose capacity decreased, we know at least that we have the capacity to move a unit across all the edges from $x$ to $t$ where we decremented the flow, so we might end up re-using some of those. In particular, we will definitely use the edge that goes from $x$ back across the min cut, using the unit of flow we had freed during the for loop. However we also need at least one other edge with extra capacity in order to complete the needed path $P_{xt}$.
 \\
+\end{itemize}
+
+\section{Matrix game}
+Here are linear programs to maximize the value of the game for the row and column players. \\
+Row player:
+\begin{align*}
+max\ z & \\
+& z & - 3x_1 & - 6x_2 & + 3x_3 & + 7x_4 & \le 0 \\
+& z & - x_1 & + 2x_2 & + 2x_3 & - 4x_4 & \le 0 \\
+& z & & + 2x_2 & - 3x_3 & + 5x_4 & \le 0 \\
+& z & + 4x_1 & & + 3x_3 & - 7x_4 & \le 0 \\
+& & x_1 & + x_2 & + x_3 & + x_4 & = 1
+\end{align*}
+Column player:
+\begin{align*}
+min\ w & \\
+& w & - 3y_1 & - y_2 & & + 4y_4 & \ge 0 \\
+& w & - 6y_1 & + 2y_2 & + 2y_3 & & \ge 0 \\
+& w & + 3y_1 & + 2y_2 & - 3y_3 & + 3y_4 & \ge 0 \\
+& w & + 7y_1 & -4y_2 & + 5y_3 & - 7y_4 & \ge 0 \\
+& & y_1 & + y_2 & + y_3 & + y_4 & = 1
+\end{align*}
+Solving these yields
+\begin{equation*}
+(z, x_1, x_2, x_3, x_4) = \left ( -\frac{224}{583}, \frac{8}{53}, \frac{161}{583}, \frac{221}{583}, \frac{113}{583} \right )
+\end{equation*}
+\begin{equation*}
+(w, y_1, y_2, y_3, y_4) = \left ( -\frac{224}{583}, \frac{81}{583}, \frac{11}{53}, \frac{234}{583}, \frac{147}{583} \right )
+\end{equation*}
+\\
+The proper strategy for the row player is choose row $i$ with the given probability for $x_i$ in the solution above. Likewise, the proper strategy for the column player is choose column $i$ with the given probability for $y_i$. \\
+\\
+The value of the game is thus $-\frac{224}{583}$, meaning on average the row player will pay the column player $\frac{224}{583}$ times the amount at stake in the game. Therefore to make it fair the column player should pay the row player to play, at a price equal to $\frac{224}{583}$ times the amount wagered. For instance if they bet \$1 each game, the column player should pay the row player about 38 cents to play. 
+\newpage
+\section{Number of independent sets}
+\begin{itemize}
+\item How many independent sets are there on a graph that is a line on $n$ vertices? \\
+\\
+Suppose with have a line graph with $k-1$ vertexes and have computed the number independent sets it has, $T(k-1)$. Then we add a vertex at the end to obtain $k$ vertices. We can union that vertex with all the independent sets we had before, except for the sets that included the ($k-1$)th vertex. (No set may include both vertices $k-1$ and $k$ because there is an edge between them.) \\
+That is, we can union the $k$th vertex with all the independent sets we had on a line graph with $k-2$ vertices, including the empty set. Adding that number to the number of sets that \emph{do} include the $(k-1)$th vertex yields the total number for $k$ vertices. \\
+Thus a recurrence for the number of independent sets is \\
+$T(k) = T(k-1) + T(k-2),\ T(0) = 1,\ T(1) = 2$. \\
+\\
+This is almost the Fibonacci sequence, just shifted forward by 1, i.e. \\
+$T_0 = F_1 = 1,\ T_1 = F_2 = 2, \dots, T_i = F_{i+1}$.
+\item How many independent sets are there on a cycle of $n$ vertices? \\
+Like the line graph, vertex $v_k$ may not be unioned with any independent set that include $v_{k-1}$. In addition, it may not be unioned with any set that includes $v_1$.
+\item How many independent sets are there on a complete binary tree? \\
+Suppose a complete binary tree has $2^{k-1}$ nodes on its bottom row, and $n = 2^{k} - 1$ nodes total. Adding another level adds $2^{k}$ nodes. That row by itself has $2^{2^{k}}$ subsets including the empty set (the power set of $2^{k}$ items). All of them are independent sets in the tree because no edge connects nodes at a given level. Therefore we may construct new independent sets by unioning all subsets of the bottom row (level $k$) with all independent sets of the tree that do not include nodes from level $k-1$. \\
+\\
+We also must add the number of independent sets that \emph do include the nodes at level $k-1$. \\
+\\
+Finally there are independent sets that include nodes from both level $k-1$ and level $k$, but a parent and its children can never be in the same independent set. I do not know how to count those. Therefore the recurrence below does not include this last group of independent sets. \\
+\\
+$T(2^{k+1} - 1) \ge 2^{2^{k}}(T(2^{k-1} - 1) + (T(2^{k} - 1) - T(2^{k-1} - 1))$ \\
+$T(0) = 1, T(1) = 2, T(3) = 5$.
+
 \end{itemize}
 \end{document}  
