@@ -5,13 +5,21 @@
 
 #include "utils.h"
 
-#define DIMENSION 2 
+#define NUM_LINES 100
 #define LOWER_BOUND 0
-#define UPPER_BOUND 1
+#define UPPER_BOUND 10000
 
 int main(int argc, char *argv[]) {
-    if (argc != 2)
-        error(1,"usage: random_input <dimension>","");
+
+    int tot;
+    if (argc == 2) {
+        //tot = 2 * pow(atoi(argv[1]), 2);
+        tot = atoi(argv[1]);
+    }
+    else if (argc == 1)
+        tot = NUM_LINES;
+    else
+        error(1,"usage: random_input <num lines>","");
 
     FILE *fp = fopen("inputfile", "w+");
     if (fp == NULL)
@@ -19,7 +27,6 @@ int main(int argc, char *argv[]) {
 
     srandom(time(NULL));
     int i;
-    int tot = 2 * pow(atoi(argv[1]), 2);
     for (i = 0; i < tot; i++) {
         fprintf(fp,"%d\n",(int) round(random_float(LOWER_BOUND, UPPER_BOUND)) );
     }

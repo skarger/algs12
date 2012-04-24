@@ -1,0 +1,17 @@
+task :default => [:test]
+
+desc "Run test series"
+task :test => [:random_input] do
+    ruby "run_test.rb"
+end
+
+desc "Create random file of integers"
+task :random_input do
+    sh "./random_input"
+end
+
+# generate 50 random instances of the problem
+
+# For each instance, find the result from using the Karmarkar-Karp algorithm
+
+# for each instance, run a repeated random, a hill climbing, and a simulated annealing algorithm, using both representations, each for at least 25,000 iteration
