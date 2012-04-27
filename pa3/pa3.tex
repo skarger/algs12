@@ -1,0 +1,87 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{epstopdf}
+\usepackage{algorithmic}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+
+
+\title{}
+\author{}
+\date{}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+%\section{}
+%\subsection{}
+
+\section{Dynamic programming algorithm}
+To minimize the residue we need to divide the numbers into two sets such that their sums are as close to equal as possible. This is equivalent to finding a subset that adds up to half the total sum, or as close to it as possible. In other words we need to solve the Subset Sum problem. \\
+\\
+More precisely, given $A = (a_1,a_2,\dots,a_n)$, compute $b = \sum_1^n a_i$, set $W = b/2$, and determine the subset $S \subset A$ that maximizes $\sum_{a \in S} a_i$, under the constraint that $\sum_{a \in S} a_i \le W$.\\
+\\
+Note: I consulted Kleinberg and Tardos, pages 267-271, and am using their solution to the Subset Sum problem: \\
+\begin{algorithmic}
+\STATE Function Subset-Sum($A, n, W$)
+\STATE Array $M[0, \dots, n, 0, \dots, W]$
+\STATE Initialize $M[0, w] = 0$ for each $w = 0, 1, \dots, W$
+\FOR{$i=1, 2, \dots, n$}
+\FOR{$w = 0, \dots, W$}
+\STATE OPT represents that largest sum possible with the constraint that $M[i, w] \le w$
+\IF{$w < a_i$}
+\STATE $M[i, w]$ := OPT($i-1,w$)
+\ELSE
+\STATE $M[i, w]$ := max(OPT($i-1,w$), $a_i + $ OPT($i-1,w-a_i$))
+\ENDIF
+\ENDFOR
+\ENDFOR
+\STATE Return array $M$
+\STATE End Subset-Sum \\
+\end{algorithmic}
+\leavevmode
+\\
+The algorithm above fills in a 2d array with the maximum possible sums for every non-negative integer value $w \le W$. For a given set item $a_i$ it checks whether $a_i > w$. If so then $a_i$ cannot be part of the optimal sum for that $w$. Otherwise it determines the optimal sum composed of $a_i$ and previous set items. At this point it has already computed the optimal sums that use previous set items and smaller constraints. In particular it has computed the optimal sum that use previous set items and the constraint $w' = w - a_i$.\\
+\\
+Given the filled array $M$ we can determine the subset $S$ as follows. The starting input to the algorithm below would be $M$, $j=n$, and $w = W$. It checks if $a_j$ augments the optimal sum possible for $W$. If not it tries the same check for the previous element $a_{j-1}$. If so then it includes $j$ in the input, and checks if element $a_{j-1}$ augments the optimal sum possible for $W - a_j$. Continuing in this fashion it grabs every $j$ for which we should include $a_j$ in $S$.\\
+\begin{algorithmic}
+\STATE Function Find-Subset($M, j, w$)
+\IF{j = 0}
+\STATE Return empty set
+\ELSIF{$M[j,w] \ge M[j-1,w]$}
+\STATE Return $j\ \cup $ Find-Subset($M,j-1,w-a_j$)
+\ELSE
+\STATE  Find-Subset($M,j-1,w$)
+\ENDIF
+\STATE End Find-Subset
+\end{algorithmic}
+\leavevmode
+\\
+The algorithm for the Number Partition problem is then just
+\begin{algorithmic}
+\STATE Function Number-Partition($A, n$)
+\STATE $b := \sum_1^n a_i$
+\STATE $W := b/2$
+\STATE Array $M := $ Subset-Sum($A, n, W$)
+\STATE $S'$ := Find-Subset($M,n,W$)
+\STATE $S := []$ 
+\FORALL{$j$}
+\IF{$j \in S'$}
+\STATE $S_j := 1$
+\ELSE
+\STATE $S_j := -1$
+\ENDIF
+\ENDFOR
+\STATE Return $S$
+\STATE End Number-Partition
+\end{algorithmic}
+\leavevmode
+\\
+As far as running time: We can compute $b$ and $W$ in $O(n\,log \,b)$ time. After computing $M$ we can find the optimal subset in $O(n)$ time. The dominating task is Subset-Sum. It loops over the $n$ items in $A$, and using $W+1$ constraint values does constant work. $W$ is $O(b)$ and thus Subset-Sum's running time is $O(nb)$. 
+\end{document}  
