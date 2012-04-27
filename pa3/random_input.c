@@ -28,12 +28,12 @@ int main(int argc, char *argv[]) {
     srandom(time(NULL));
     int i;
     for (i = 0; i < tot; i++) {
-        fprintf(fp,"%d\n",(int) round(random_float(LOWER_BOUND, UPPER_BOUND)) );
+        fprintf(fp,"%d\n",(int) round(random_double(LOWER_BOUND,UPPER_BOUND)) );
     }
 
     fclose(fp);
     long long lg;
-    printf("size of lg: %d\n", sizeof(lg));    
+    printf("size of lg: %lld\n", sizeof(lg));
     return 0;
 }
 
