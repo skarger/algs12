@@ -29,6 +29,6 @@ utils.o: utils.c utils.h
 	$(CC) $(CFLAGS) -c utils.c
 
 
-clean: default
+clean:
 	rm *.o 
 
