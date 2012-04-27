@@ -2,14 +2,19 @@ CFLAGS = -Wall
 LIBS=-lm
 JC = javac
 
-default: kk
-	#$(JC) *.java
+default: kk 
 
-kk: kk.o utils.o
+kk: kk.o utils.o KarmarkarKarp.class
 	$(CC) $(CFLAGS) $(LIBS) kk.o utils.o -o kk
 
 kk.o: kk.c utils.h
 	$(CC) $(CFLAGS) -c kk.c
+
+KarmarkarKarp.class: KarmarkarKarp.java NumericDataReader.class
+	$(JC) KarmarkarKarp.java
+
+NumericDataReader.class: NumericDataReader.java
+	$(JC) NumericDataReader.java
 
 random_input: random_input.o utils.o
 	$(CC) $(CFLAGS) $(LIBS) random_input.o utils.o -o random_input
@@ -26,5 +31,4 @@ utils.o: utils.c utils.h
 
 clean: default
 	rm *.o 
-
 

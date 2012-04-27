@@ -84,4 +84,12 @@ The algorithm for the Number Partition problem is then just
 \leavevmode
 \\
 As far as running time: We can compute $b$ and $W$ in $O(n\,log \,b)$ time. After computing $M$ we can find the optimal subset in $O(n)$ time. The dominating task is Subset-Sum. It loops over the $n$ items in $A$, and using $W+1$ constraint values does constant work. $W$ is $O(b)$ and thus Subset-Sum's running time is $O(nb)$. 
+\\
+\\
+\section{How to implement $O(n\,log\,n)$ KK algorithm}
+The KK-algorithm repeatedly needs to find the largest and second largest remaining elements. A good data structure to accomplish that is a Max-Heap. Given $A$, the unsorted list of $n$ integers, we can run Build-Heap in $O(n\,log\,n)$ time (or even $O(n)$ time, using the tight bound). \\
+\\
+For a single differencing operation we call Extract-Max twice to get the two largest elements. We find their difference, and it is assumed that the numbers are small enough to do that in constant time. Then to complete the operation we call Insert once to put the result back in the heap. Extract-Max and Insert run in $O(log\,n)$ time so the entire differencing operation is $O(log\,n)$. Note that if the difference of two elements is 0 then there is no need to insert 0 into the heap, so the running time might be slightly better, although still asymptotically equivalent.\\
+\\
+The KK-algorithm must perform differencing operations until the heap has only one item whose value is the residue. Each differencing operation reduces the size of the heap by at least one, so we need to difference $O(n)$ times. This means the algorithm's total running time is $O(n\,log\,n)$.
 \end{document}  
