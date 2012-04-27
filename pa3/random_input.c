@@ -32,7 +32,8 @@ int main(int argc, char *argv[]) {
     }
 
     fclose(fp);
-    
+    long long lg;
+    printf("size of lg: %d\n", sizeof(lg));    
     return 0;
 }
 
