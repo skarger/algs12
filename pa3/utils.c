@@ -6,40 +6,40 @@
 #include "utils.h"
 
 /*
- * random_float
- * return a random float in the interval [a, b]
+ * random_double
+ * return a random double in the interval [a, b]
  * caller must set random seed
  */
-float random_float(float a, float b) {
+double random_double(double a, double b) {
     if (b < a)
         return 0;
     /* make random number in [0,1] */
-    float ran_fraction = (1.0 * random()) / RAND_MAX;
+    double ran_fraction = (1.0 * random()) / RAND_MAX;
     /* scale it to be in interval [a,b] */
     return (a + (b - a) * ran_fraction);
 }
 
 /*
- * create_float_array
+ * create_double_array
  * input: n (positive integer)
- * create a float array of size n
+ * create a double array of size n
  */
-float *create_float_array(int n) {
+double *create_double_array(int n) {
     if (n < 1)
         return NULL;
-    float *fp = malloc(n * sizeof(float));
+    double *fp = malloc(n * sizeof(double));
     if (fp == NULL)
-        printf("create_float_array: cannot malloc float array\n");
+        printf("create_double_array: cannot malloc double array\n");
     return fp; 
 }
 
 /*
  * euclidean_distance
- * input: float arrays x and y that have equal length equal to dimension
+ * input: double arrays x and y that have equal length equal to dimension
  * returns: euclidean distance between the points represented by x and y
  */
-float euclidean_distance(float *x, float *y, int dimension) {
-    float dist2 = 0.0, diff;
+double euclidean_distance(double *x, double *y, int dimension) {
+    double dist2 = 0.0, diff;
     int i;
     for (i = 0; i < dimension; i++) {
         diff = x[i] - y[i];
@@ -67,10 +67,10 @@ void error(int errcd, char *msg1, char *msg2) {
 
 /*
 int main() {
-    float x1[2] = {0.0, 0.0};
-    float x2[2] = {1.0, 1.0};
+    double x1[2] = {0.0, 0.0};
+    double x2[2] = {1.0, 1.0};
 
-    float d = euclidean_distance(x1, x2, 2);
+    double d = euclidean_distance(x1, x2, 2);
     printf("sqrt 2: %f\n",sqrt(2));
     printf("ed: %f\n",d);
     return 0;
