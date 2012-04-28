@@ -1,8 +1,16 @@
 task :default => [:test]
 
 desc "Run test series"
-task :test => [:random_input] do
-    ruby "run_test.rb"
+task :test do
+    25000.times do
+        Rake::Task['run_kk'].execute
+    end
+end
+
+desc "Run KK algorithm on one input set"
+task :run_kk do
+    Rake::Task['random_input'].execute
+    sh "./kk inputfile"
 end
 
 desc "Create random file of integers"
