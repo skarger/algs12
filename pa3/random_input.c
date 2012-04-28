@@ -7,7 +7,7 @@
 
 #define NUM_LINES 100
 #define LOWER_BOUND 0
-#define UPPER_BOUND 10000
+#define UPPER_BOUND 1000000000000
 
 int main(int argc, char *argv[]) {
 
@@ -25,15 +25,19 @@ int main(int argc, char *argv[]) {
     if (fp == NULL)
         error(1,"random_input: could not open file","");
 
-    srandom(time(NULL));
     int i;
+    struct seed sd;
+    unsigned long long ri;
     for (i = 0; i < tot; i++) {
-        fprintf(fp,"%d\n",(int) round(random_double(LOWER_BOUND,UPPER_BOUND)) );
+        ri = JLKISS64(&sd) % UPPER_BOUND; /* range [0, 10^12 -1] */
+        ri = ri + 1;
+        fprintf(fp,"%llu\n", ri);
     }
 
     fclose(fp);
     long long lg;
     printf("size of lg: %zu\n", sizeof(lg));
+    printf("RM %d\n", RAND_MAX);
     return 0;
 }
 

@@ -16,8 +16,8 @@ KarmarkarKarp.class: KarmarkarKarp.java NumericDataReader.class
 NumericDataReader.class: NumericDataReader.java
 	$(JC) NumericDataReader.java
 
-random_input: random_input.o utils.o
-	$(CC) $(CFLAGS) $(LIBS) random_input.o utils.o -o random_input
+random_input: random_input.o utils.o mt19937-64.o
+	$(CC) $(CFLAGS) $(LIBS) random_input.o utils.o mt19937-64.o -o random_input
 
 random_input.o: random_input.c utils.h
 	$(CC) $(CFLAGS) -c random_input.c
