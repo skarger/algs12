@@ -27,7 +27,8 @@ public class KarmarkarKarp {
         System.out.println(residue);
     }
 
-    public static long KK(long[] data, int numItems) {
+    public static long KK(long[] data, int numItems)
+    {
         if (numItems > data.length)
             throw new IllegalArgumentException("numItems > data length");
 

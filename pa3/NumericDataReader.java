@@ -48,8 +48,8 @@ public class NumericDataReader {
 
     private static int read_data(Scanner sc, long[] data) {
         int i = 0, cnt = 0;
-        while(sc.hasNextInt() && i < data.length) {
-                data[i++] = sc.nextInt();
+        while(sc.hasNextLong() && i < data.length) {
+                data[i++] = sc.nextLong();
                 cnt++;
         }
         return cnt;

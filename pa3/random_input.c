@@ -35,9 +35,7 @@ int main(int argc, char *argv[]) {
     }
 
     fclose(fp);
-    long long lg;
-    printf("size of lg: %zu\n", sizeof(lg));
-    printf("RM %d\n", RAND_MAX);
+
     return 0;
 }
 
