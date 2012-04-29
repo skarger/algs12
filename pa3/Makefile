@@ -2,9 +2,9 @@ CFLAGS = -Wall -std=gnu99
 LIBS=-lm
 JC = javac
 
-default: kk 
+default: kk NumberPartition
 
-kk: kk.o utils.o KarmarkarKarp Partition
+kk: kk.o utils.o KarmarkarKarp
 	$(CC) $(CFLAGS) $(LIBS) kk.o utils.o -o kk
 
 kk.o: kk.c utils.h
@@ -20,8 +20,17 @@ Partition: Partition.class
 Partition.class: Partition.java KarmarkarKarp.class
 	$(JC) Partition.java
 
+NumberPartition: NumberPartition.class
+
+NumberPartition.class: NumberPartition.java Partition.class Stopwatch.class
+	$(JC) NumberPartition.java
+
 NumericDataReader.class: NumericDataReader.java
 	$(JC) NumericDataReader.java
+
+Stopwatch.class: Stopwatch.java
+	$(JC) Stopwatch.java
+    
 
 random_input: random_input.o utils.o
 	$(CC) $(CFLAGS) $(LIBS) random_input.o utils.o -o random_input

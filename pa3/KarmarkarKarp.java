@@ -1,4 +1,6 @@
-
+/*
+ * Implementation of the KarmarkarKarp algorithm.
+ */
 import java.util.*;
 
 public class KarmarkarKarp {
