@@ -52,7 +52,7 @@ public class Partition {
         solType = SolutionType.STANDARD;
         randomStandardSolution();
         moveToOtherSolution();
-        sumSubsets();
+        sumSubsets(solution);
     }
 
     /*
@@ -101,10 +101,12 @@ public class Partition {
                 ("moveToOtherSolution: solution undefined");
         }
 
-        System.arraycopy(otherSolution, 0, solution, 0, this.numItems);
+        System.arraycopy(otherSolution, 0, solution, 0, numItems);
 
+        if (solType == SolutionType.STANDARD)
+            sumSubsets(solution);
         if (solType == SolutionType.PREPARTITION)
-            System.arraycopy(otherPPData, 0, ppData, 0, this.numItems);
+            System.arraycopy(otherPPData, 0, ppData, 0, numItems);
     }
 
     /*
@@ -139,8 +141,20 @@ public class Partition {
         otherSolution[j] = randomPosNeg1() * solution[j];
     }
 
+    /*
+     * randomPPNeighbor - generate a random neighbor to a pre-partition soln.
+     * does not update solution array
+     */
     private void randomPPNeighbor() {
-        return;
+        // pick two indices
+        int i = randomRange(numItems);
+        int j;
+        do {
+            j = randomRange(numItems);
+        } while (solution[i] == j);
+
+        iNeighbor = i;
+        otherSolution[i] = j;
     }
 
     /*
@@ -157,9 +171,32 @@ public class Partition {
             updateSums(j, solution[j], otherSolution[j]);
             solution[j] = otherSolution[j];
         } else if (solType == SolutionType.PREPARTITION) {
-            //
+            int i = iNeighbor;
+            int pi = solution[i];     // old assignment
+            int j = otherSolution[i]; // new assignment
+            solution[i] = j;
+            // subtract from old index, add to new index
+            ppData[pi] -= data[i];
+            ppData[j] += data[i];
         } else
             throw new RuntimeException ("moveToNeighbor: solution undefined");
+    }
+
+    /*
+     *
+     */
+    public long otherResidue() {
+        if (solType == SolutionType.STANDARD) {
+            long tempSum1 = positiveSum(otherSolution);
+            long tempSum2 = negativeSum(otherSolution);
+            return Math.abs(tempSum1 + tempSum2);
+        }
+        else if (solType == SolutionType.PREPARTITION) {
+            return KarmarkarKarp.KK(otherPPData, numItems);
+        }
+        else
+            throw new RuntimeException ("otherResidue: solution undefined");
+
     }
 
     /*
@@ -201,7 +238,14 @@ public class Partition {
     }
 
     private long ppNeighborResidue() {
-        return 0;
+        int i = iNeighbor;
+        int pi = solution[i];
+        int j = otherSolution[i];
+        System.arraycopy(ppData, 0, otherPPData, 0, numItems);
+        otherPPData[pi] -= data[i];
+        otherPPData[j] += data[i];
+
+        return KarmarkarKarp.KK(otherPPData, numItems);
     }
 
     /*
@@ -241,14 +285,33 @@ public class Partition {
      * the negative values into sumA2.
      * Only makes sense to call when solution is +/- 1 values.
      */
-    private void sumSubsets() {
-        sumA1 = sumA2 = 0;
+    private void sumSubsets(int[] arr) {
+        sumA1 = positiveSum(solution);
+        sumA2 = negativeSum(solution);
+    }
+
+    /*
+     * positiveSum - add numbers for which partition value is 1
+     */
+    private long positiveSum(int[] arr) {
+        int sum = 0;
         for (int i = 0; i < this.numItems; i++) {
-            if (solution[i] == 1)
-                sumA1 += data[i];
-            else
-                sumA2 -= data[i];
+            if (arr[i] == 1)
+                sum += data[i];
         }
+        return sum;
+    }
+
+    /*
+     * negativeSum - add numbers for which partition value is -1
+     */
+    private long negativeSum(int[] arr) {
+        int sum = 0;
+        for (int i = 0; i < this.numItems; i++) {
+            if (arr[i] == -1)
+                sum -= data[i];
+        }
+        return sum;
     }
 
     /*
@@ -300,6 +363,7 @@ public class Partition {
         Partition p = new Partition(5, arr);
 
 
+        System.out.println("--- standard testing ---");
         p.initialStandardSolution();
         for (int i = 0; i < p.numItems; i++) {
             System.out.println(p.solution[i] + " " + p.data[i]);
@@ -319,17 +383,43 @@ public class Partition {
         System.out.println("residue: " + p.residue());
 
         System.out.println("---");
+        p.randomStandardSolution();
+        System.out.println("After creating O.S....");
+        System.out.println("otherResidue: " + p.otherResidue());
+        p.moveToOtherSolution();
+        System.out.println("After moving to O.S....");
+        for (int i = 0; i < p.numItems; i++) {
+            System.out.println(p.solution[i] + " " + p.data[i]);
+        }
+        System.out.println("sumA1 " + p.sumA1 + " sumA2 " + p.sumA2);
+        System.out.println("residue: " + p.residue());
 
+        System.out.println();
+        System.out.println("--- prepartition testing ---");
         p.initialPPSolution();
+
         for (int i = 0; i < p.numItems; i++) {
             System.out.println(p.data[i] + " " + p.solution[i] + " " + 
                                 p.ppData[i]);
         }
         System.out.println("residue: " + p.residue());
 
+        p.createRandomNeighbor();
+        System.out.println("iN " + p.iNeighbor);
+        System.out.println("neighborResidue: " + p.neighborResidue());
+
+        System.out.println("After moving to neighbor...");
+        p.moveToNeighbor();
+        for (int i = 0; i < p.numItems; i++) {
+            System.out.println(p.data[i] + " " + p.solution[i] + " " + 
+                                p.ppData[i]);
+        }
+        System.out.println("residue: " + p.residue());
+
+        System.out.println("---");
         System.out.println("After creating O.S....");
         p.randomPPSolution();
-        System.out.println("neighborResidue: " + p.neighborResidue());
+        System.out.println("otherResidue: " + p.otherResidue());
         p.moveToOtherSolution();
         System.out.println("After moving to O.S....");
         for (int i = 0; i < p.numItems; i++) {
@@ -338,14 +428,5 @@ public class Partition {
         }
         System.out.println("residue: " + p.residue());
 
-/*
-        System.out.println("---");
-        int [] ts = {0, 1, 1, 3, 4};
-        p.solution = ts;
-        p.applyPP(p.ppData, p.solution);
-        for (int i = 0; i < p.numItems; i++) {
-            System.out.println(p.data[i] + " " + p.solution[i] + " " + p.ppData[i]);
-        }
-*/
     }
 }

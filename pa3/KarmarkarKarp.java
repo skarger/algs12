@@ -15,14 +15,6 @@ public class KarmarkarKarp {
             }
         }
         long[] data = NumericDataReader.arrayFromFile(args[0], numItems);
-
-/*
-        for (int i = 0; i < numItems; i++)
-            System.out.print(data[i] + " ");
-
-        System.out.println();
-*/
-
         long residue = KK(data, numItems);
         System.out.println(residue);
     }
@@ -64,3 +56,4 @@ public class KarmarkarKarp {
         }
     }
 }
+
